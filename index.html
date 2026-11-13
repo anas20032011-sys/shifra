@@ -172,6 +172,50 @@ button.lnk:hover{color:var(--acc-hi);text-decoration-color:var(--acc);filter:non
 .how{list-style:none;margin:0 0 var(--s4);padding:0;display:grid;gap:var(--s2);counter-reset:n}
 .how li{counter-increment:n;display:flex;align-items:center;gap:var(--s3);padding:10px var(--s3);border-radius:var(--r);border:1px solid var(--line);background:var(--tile)}
 .how li::before{content:counter(n);display:grid;place-items:center;width:30px;height:30px;flex:none;border-radius:50%;background:var(--acc-a);border:1px solid var(--line-acc);color:var(--acc-hi);font-weight:800}
+/* ===== 9ج) غرفة التحقيق (واجهة المتسابق) ===== */
+#app{--px:var(--s4)}
+body.room::after{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;background:radial-gradient(72% 46% at 50% -6%,rgba(var(--acc-rgb),.17),transparent 70%),radial-gradient(125% 95% at 50% 38%,transparent 52%,rgba(0,0,0,.62))}
+.sticky{position:sticky;top:0;z-index:6;margin:calc(-1*var(--s4)) calc(-1*var(--px)) var(--s4);padding:var(--s3) var(--px) var(--s2);background:linear-gradient(180deg,rgba(5,9,18,.96) 82%,rgba(5,9,18,0))}
+.hud{border:1px solid var(--line);border-radius:var(--r-lg);background:linear-gradient(180deg,rgba(18,28,50,.92),rgba(10,18,34,.92));padding:var(--s3) var(--s4);box-shadow:var(--sh-sm)}
+.hud-r{display:flex;align-items:center;gap:var(--s2)}
+.agent{display:flex;align-items:center;gap:var(--s2);min-width:0}
+.agent i{display:grid;place-items:center;width:42px;height:42px;flex:none;border-radius:50%;font-style:normal;font-weight:800;font-size:20px;color:var(--acc-hi);background:var(--acc-a);border:1px solid var(--line-acc)}
+.agent span{display:grid;min-width:0;line-height:1.35}.agent small{color:var(--muted);font-size:12px}.agent b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hud .timer{font-size:24px;min-width:90px}
+.hud-s{display:grid;grid-template-columns:repeat(4,1fr);gap:var(--s2);margin-top:var(--s3)}
+.hud-s div{text-align:center;padding:5px 4px;border-radius:var(--r-sm);background:var(--tile);border:1px solid var(--line);line-height:1.35}
+.hud-s small{display:block;color:var(--muted);font-size:12px}.hud-s b{font-size:18px;font-variant-numeric:tabular-nums}.hud-s .pt{color:var(--acc-hi)}.hud-s em{font-style:normal;color:var(--faint);font-size:13px}
+.hud .tbar{margin:var(--s3) 0 0}.hud.min .hud-s{display:none}
+.case-t{font-size:clamp(24px,5vw,34px);text-align:center;margin:var(--s1) 0 var(--s2)}
+.case-d{color:var(--muted);text-align:center;max-width:46ch;margin:0 auto var(--s4)}
+.ev{display:flex;flex-wrap:wrap;justify-content:center;gap:6px;margin-bottom:var(--s4)}
+.file .st{box-shadow:none}.file .bell{margin:var(--s4) auto}
+.ansbox.lock{display:flex;align-items:center;justify-content:center;gap:var(--s2);min-height:54px;margin-top:var(--s4);padding:var(--s3);border-radius:var(--r);border:1px dashed var(--line-2);background:var(--field);color:var(--faint);font-size:15px;text-align:center}
+.dock{margin-top:var(--s2);padding:var(--s4);border-color:var(--acc);box-shadow:0 0 0 4px var(--acc-a),var(--sh);animation:rise .35s var(--t) both}
+.case.dock::before,.case.dock::after{display:none}
+.ans-l{display:flex;align-items:center;gap:var(--s2);font-weight:800;color:var(--acc-hi);margin-bottom:var(--s2)}
+.ans-row{display:flex;gap:var(--s2)}.ans-row input{flex:1;min-height:56px;font-size:20px;font-weight:800;text-align:center;border-color:var(--line-acc)}.ans-row button{min-height:56px;padding-inline:20px;flex:none}
+.ans-n{color:var(--muted);font-size:13px;margin-top:var(--s2);text-align:center}
+.res{text-align:center;padding:var(--s3) 0}.res h2{font-size:clamp(24px,5vw,34px)}.res p{color:var(--muted);margin:var(--s1) 0 var(--s3)}.res .st-a{font-size:clamp(26px,6vw,40px)}.res .stamp{margin-bottom:var(--s2)}
+.res.ok .emblem{color:var(--green-tx);border-color:rgba(47,191,133,.5);background:radial-gradient(circle at 50% 35%,rgba(47,191,133,.3),rgba(47,191,133,.04) 70%);box-shadow:0 0 0 10px rgba(47,191,133,.06),0 0 60px rgba(47,191,133,.25)}.res.ok h2{color:var(--green-tx)}
+.res.to .emblem{color:var(--red-tx);border-color:rgba(168,32,58,.6);background:radial-gradient(circle at 50% 35%,rgba(168,32,58,.34),rgba(168,32,58,.05) 70%);box-shadow:0 0 0 10px rgba(168,32,58,.07),0 0 60px rgba(168,32,58,.28)}.res.to h2{color:var(--red-tx)}
+.emblem.pulse{animation:breathe 3.2s ease-in-out infinite}
+#app.shk .file{animation:shake .45s ease}
+/* طبقة المؤثرات العابرة: لا تمنع اللمس */
+#fxo{position:fixed;inset:0;z-index:30;pointer-events:none;display:grid;place-items:center;visibility:hidden;text-align:center;overflow:hidden}
+#fxo.on{visibility:visible}
+.fx-in{display:grid;justify-items:center;gap:4px;padding:var(--s4)}
+.fx-in b{font-size:clamp(34px,8vw,72px);font-weight:800;line-height:1.3}.fx-in span{font-size:clamp(18px,3.4vw,26px);color:var(--muted)}.fx-in small{letter-spacing:.3em;color:var(--acc-hi);font-size:14px}
+#fxo.fx-stage{background:rgba(2,5,12,.84);animation:fxbg 1.15s ease both}
+#fxo.fx-stage::before,#fxo.fx-stage::after{content:"";position:absolute;left:0;right:0;height:13vh;background:#000;animation:barT 1.15s ease both}
+#fxo.fx-stage::before{top:0}#fxo.fx-stage::after{bottom:0;animation-name:barB}
+.fx-stage .fx-in{animation:fxtxt 1.15s ease both}.fx-stage b{color:var(--acc-hi);text-shadow:0 0 40px rgba(var(--acc-rgb),.45)}
+#fxo.fx-ok{background:radial-gradient(circle,rgba(12,60,45,.97),rgba(2,6,12,.94) 72%);animation:fxbg 1.5s ease both}.fx-ok .fx-in{animation:fxtxt 1.5s ease both}.fx-ok b{color:var(--green-tx)}
+.okc{width:112px;height:112px;fill:none;stroke:var(--green-hi);stroke-width:5;stroke-linecap:round;stroke-linejoin:round}
+.okc circle{stroke-dasharray:214;stroke-dashoffset:214;animation:draw .55s .1s ease forwards}.okc path{stroke-dasharray:50;stroke-dashoffset:50;animation:draw .3s .55s ease forwards}
+#fxo.fx-no{place-items:start center;box-shadow:inset 0 0 90px rgba(168,32,58,.6);animation:fxbg 1s ease both}
+.fx-no .fx-in{display:flex;align-items:center;gap:var(--s2);margin-top:24vh;padding:10px 22px;border-radius:var(--r-pill);background:rgba(58,10,18,.94);border:1px solid var(--red-hi);color:var(--red-tx);animation:fxtxt 1s ease both}
+.fx-no .fx-in b{font-size:20px}.fx-no .fx-in span{font-size:19px;font-weight:800;color:var(--red-tx)}.fx-no .i{width:22px;height:22px}
 /* ===== 10) الجرس ===== */
 .bell{flex-direction:column;gap:6px;width:min(62vw,230px);height:auto;aspect-ratio:1;margin:var(--s5) auto;display:flex;border-radius:50%;border:2px solid var(--line-acc);color:#fff;font-size:20px;background:radial-gradient(circle at 36% 28%,#c8344a,var(--red) 62%,#450a13);box-shadow:0 0 0 10px rgba(168,32,58,.14),var(--sh);animation:halo 2.4s ease-in-out infinite}
 .bell .i{width:72px;height:72px}.bell:disabled{animation:none;opacity:.7}
@@ -185,6 +229,12 @@ button.lnk:hover{color:var(--acc-hi);text-decoration-color:var(--acc);filter:non
 @keyframes fade{from{opacity:0}to{opacity:1}}
 @keyframes ping{0%{box-shadow:0 0 0 0 rgba(47,191,133,.55)}70%,100%{box-shadow:0 0 0 9px rgba(47,191,133,0)}}
 @keyframes drift{from{transform:translate(-4%,-3%) scale(1)}to{transform:translate(5%,4%) scale(1.12)}}
+@keyframes fxbg{0%{opacity:0}16%,74%{opacity:1}100%{opacity:0}}
+@keyframes fxtxt{0%{opacity:0;transform:scale(.92)}22%,74%{opacity:1;transform:none}100%{opacity:0;transform:scale(1.05)}}
+@keyframes barT{0%,100%{transform:translateY(-100%)}20%,76%{transform:none}}
+@keyframes barB{0%,100%{transform:translateY(100%)}20%,76%{transform:none}}
+@keyframes draw{to{stroke-dashoffset:0}}
+@keyframes shake{20%{transform:translateX(-7px)}40%{transform:translateX(7px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
 @keyframes rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
 @keyframes spin{to{transform:rotate(360deg)}}
 @keyframes blink{0%,80%,100%{opacity:.2}40%{opacity:1}}
@@ -195,9 +245,9 @@ button.lnk:hover{color:var(--acc-hi);text-decoration-color:var(--acc);filter:non
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
 /* ===== 13) التجاوب ===== */
 @media(max-width:860px){.about{grid-template-columns:1fr}.two,.two.eq{grid-template-columns:1fr}.steps{grid-template-columns:1fr}}
-@media(max-width:600px){.cta{flex-direction:column;align-self:stretch}.cta button{width:100%}.logo{width:108px;height:108px}.dlg{padding:var(--s4)}#app{padding-inline:var(--s3)}.card{padding:var(--s4);border-radius:var(--r)}.map{grid-template-columns:repeat(6,1fr);gap:6px}.brand span{display:none}.timer{font-size:24px;min-width:88px}.st{padding:var(--s3) var(--s4);gap:var(--s3)}.st-i{width:44px;height:44px}.case-h{padding-inline:var(--s4)}.act button{flex:1 1 44%}}
+@media(max-width:600px){#app{--px:var(--s3)}.hud{padding:var(--s3)}.cta{flex-direction:column;align-self:stretch}.cta button{width:100%}.logo{width:108px;height:108px}.dlg{padding:var(--s4)}#app{padding-inline:var(--s3)}.card{padding:var(--s4);border-radius:var(--r)}.map{grid-template-columns:repeat(6,1fr);gap:6px}.brand span{display:none}.timer{font-size:24px;min-width:88px}.st{padding:var(--s3) var(--s4);gap:var(--s3)}.st-i{width:44px;height:44px}.case-h{padding-inline:var(--s4)}.act button{flex:1 1 44%}}
 @media(max-width:360px){.map{grid-template-columns:repeat(5,1fr)}}
-</style></head><body><canvas id="fx" aria-hidden="true"></canvas><div id="app"></div><div id="toast" role="status" aria-live="polite"></div>
+</style></head><body><canvas id="fx" aria-hidden="true"></canvas><div id="app"></div><div id="toast" role="status" aria-live="polite"></div><div id="fxo" aria-hidden="true"></div>
 <script>
 const GR=[["آ-أ","💤"],["ب","🎯"],["ت","🔋"],["ث","💡"],["ج","💣"],["ح","🧩"],["خ","🥇"],["د","🎤"],["ذ","🌊"],["ر","🕶"],["ع","📿"],["غ","🛎"],["ف","🔑"],["ز","🌓"],["س","⏰"],["ش","🚀"],["ص","🥊"],["ض","🧱"],["ط","🪓"],["ظ","📚"],["ق","🎥"],["ك","📻"],["ل","🎬"],["م","👑"],["ن","🧠"],["ه","💼"],["و","🦊"],["ي-ئ","🍔"],["إ-ء","💰"],["ة","⛱️"]];
 const CM={};GR.forEach(([l,e])=>l.split("-").forEach(c=>CM[c]=e));CM["ا"]=CM["أ"];CM["ى"]=CM["ي"];CM["ؤ"]=CM["و"];
@@ -245,11 +295,17 @@ to:()=>{tone(440,0,.25,"square",.15);tone(330,.25,.25,"square",.15);tone(220,.5,
 rev:()=>tone(660,0,.25),fin:()=>{tone(523,0,.18);tone(659,.16,.18);tone(784,.32,.18);tone(1047,.48,.6)},nq:()=>{tone(523,0,.1);tone(784,.1,.18)}};
 function snd(k){if(mute||!AC)return;try{SND[k]()}catch(e){}}
 function tgm(){mute=!mute;try{localStorage.setItem("mute",mute?"1":"0")}catch(e){}const b=$("mu");if(b)b.innerHTML=I(mute?"mute":"vol")}
-function fx(o,d){if(!o||!d)return;if(d.round!=o.round){t0=Date.now();t0r=d.round;lastR=-1;snd("nq")}
+let ft=0,wonR=-1,sc0=0,foc=0;
+function flash(k,t,u,ms){const e=$("fxo");if(!e)return;e.className="";void e.offsetWidth;
+e.innerHTML=`<div class="fx-in">${k=="ok"?'<svg class="okc" viewBox="0 0 80 80"><circle cx="40" cy="40" r="34"/><path d="M24 41l11 11 21-23"/></svg>':k=="no"?I("x"):"<small>ملف جديد</small>"}<b>${t}</b>${u?`<span>${u}</span>`:""}</div>`;
+e.className="on fx-"+k;clearTimeout(ft);ft=setTimeout(()=>e.className="",ms)}
+function fx(o,d){if(!o||!d)return;const p=V.role=="p",my=(me()||{}).score||0;
+if(d.round!=o.round){t0=Date.now();t0r=d.round;lastR=-1;snd("nq");if(V.role!="h")flash("stage","القضية رقم "+(d.qn||1),"المرحلة: "+LV[d.level],1150)}
 else if(d.phase=="end"&&o.phase!="end")snd("fin");
-else if(d.phase=="reveal"&&o.phase=="q")snd(d.res&&d.res.ok?"ok":d.res&&d.res.to?"to":"rev");
-else if(d.turn&&d.turn!=o.turn)snd("bell");
-else if((d.tried||[]).length>(o.tried||[]).length)snd("no")}const toast=m=>{const t=$("toast"),k=/^(تم|أضيف|نُسخ)/.test(m)?"ok":/(غير|تعذر|لا تسمح|اكتب)/.test(m)?"err":"";t.className="show "+k;t.innerHTML=I(k=="ok"?"check":k=="err"?"alert":"info")+"<span>"+esc(m)+"</span>";clearTimeout(tt);tt=setTimeout(()=>t.className=k,2800)};
+else if(d.phase=="reveal"&&o.phase=="q"){snd(d.res&&d.res.ok?"ok":d.res&&d.res.to?"to":"rev");if(p&&d.res&&d.res.ok&&o.turn==V.pid){wonR=d.round;flash("ok","إجابة صحيحة",'<bdi dir="ltr">+10</bdi> نقاط',1500)}}
+else if(d.turn&&d.turn!=o.turn){snd("bell");if(p&&d.turn==V.pid){sc0=my;foc=1}}
+else if((d.tried||[]).length>(o.tried||[]).length){snd("no");if(p&&d.tried.includes(V.pid)&&!(o.tried||[]).includes(V.pid)){flash("no","محاولة خاطئة",my<sc0?'<bdi dir="ltr">−'+(sc0-my)+"</bdi>":"",1000);const a=$("app");if(a&&a.classList){a.classList.add("shk");setTimeout(()=>a.classList.remove("shk"),500)}}}}
+const toast=m=>{const t=$("toast"),k=/^(تم|أضيف|نُسخ)/.test(m)?"ok":/(غير|تعذر|لا تسمح|اكتب)/.test(m)?"err":"";t.className="show "+k;t.innerHTML=I(k=="ok"?"check":k=="err"?"alert":"info")+"<span>"+esc(m)+"</span>";clearTimeout(tt);tt=setTimeout(()=>t.className=k,2800)};
 const G=()=>db.doc("g/"+V.code),P=()=>db.collection("g/"+V.code+"/p");
 const me=()=>V.ps.find(p=>p.id==V.pid);
 const mapH=()=>`<div class="map">${GR.map(([l,e])=>`<div><b>${e}</b><span>${l.replace("-"," ")}</span></div>`).join("")}</div>`;
@@ -267,6 +323,9 @@ const fin=()=>{const a=rank(),t=a.filter(p=>(p.score||0)==(a[0].score||0));retur
 const endView=s=>{const a=rank(),i=a.findIndex(p=>p.id==V.pid),m=me()||{};
 if(V.role=="p")return `${topbar(s,"متسابق",`<span class="chip"><b>${esc(m.name)}</b></span>`)}${fin()}${i>=0?stt("info","trophy",`مركزك ${i+1} من ${a.length}`+` <span class="pts">${m.score||0} نقطة</span>`):""}<section class="card"><h3>${I("trophy")} الترتيب النهائي</h3>${board()}</section>`;
 return `${topbar(s,V.role=="h"?"المنظّم":"شاشة العرض")}<div class="two"><div class="stack">${fin()}${V.role=="h"?`<section class="card"><p class="mu" style="margin-bottom:12px">أُنهيت المسابقة وظهر الترتيب النهائي للجميع. يمكنك إعادة فتحها بالرمز نفسه مع بقاء النقاط.</p><button class="s wide" onclick="reopen()">${I("reset")} إعادة فتح المسابقة</button></section>`:""}</div><aside class="card"><h3>${I("trophy")} الترتيب النهائي</h3>${board()}</aside></div>`};
+const hud=(s,m,min)=>{const a=rank(),i=a.findIndex(p=>p.id==V.pid);return `<header class="hud${min?" min":""}"><div class="hud-r"><span class="agent"><i>${esc((m.name||"؟").trim().slice(0,1))}</i><span><small>المحقق · الرمز ${V.code}</small><b>${esc(m.name)}</b></span></span><span class="grow"></span>${MU()}${timer(s)}</div>
+<div class="hud-s"><div><small>القضية</small><b>${s.qn||"—"}</b></div><div><small>المرحلة</small><b>${LV[s.level]}</b></div><div><small>النقاط</small><b class="pt">${m.score||0}</b></div><div><small>المركز</small><b>${i>=0?`${i+1}<em>/${a.length}</em>`:"—"}</b></div></div>
+<div class="tbar"><i id="tb" style="width:${s.phase=="q"?Math.min(100,rem(s)/s.dur*100):0}%"></i></div></header>`};
 let LS={c:"",st:undefined,n:null,un:[]},pn="",lp="",vt=0;
 function lsUp(){if(V.role)return;[["stt",stat("stt")],["jst",stat("jst")],["facts",facts()]].forEach(([i,h])=>{const e=$(i);if(e)e.outerHTML=h})}
 function watch(c){c=/^\d{4}$/.test(c||"")&&db?c:"";if(LS.c==c)return;LS.un.forEach(u=>u());LS={c,st:undefined,n:null,un:[]};
@@ -346,14 +405,22 @@ ${s.phase!="lobby"?`<section class="card case"><div class="case-h"><span>${I("se
 <section class="card"><h3>${I("plus")} إضافة أسئلة</h3><div class="row"><input id="cq" class="grow" style="flex:1 1 220px;width:auto" placeholder="كلمة أو عبارة تتحول لرموز تلقائياً"><button onclick="addQ()">${I("plus")} إضافة</button></div>
 <p class="mu" style="margin-top:12px;font-size:14px">عدد الأسئلة المتاحة في المستوى المختار: ${pool(s.level,s.extra).length} · لا يتكرر السؤال ما دامت هناك أسئلة غير مستخدمة.</p></section></div>
 <aside class="card"><h3>${I("users")} المتسابقون (${V.ps.length})</h3>${board()}<button class="s wide" onclick="resetAll()" style="margin-top:16px">${I("reset")} تصفير النقاط</button><button class="${cf?"r":"s"} wide" onclick="endG()" style="margin-top:8px">${I(cf?"alert":"x")} ${cf?"اضغط مرة أخرى للتأكيد":"إنهاء المسابقة"}</button></aside></div>`;
-else{const m=me()||{},mine=s.turn==V.pid,tried=(s.tried||[]).includes(V.pid);
-h=`${topbar(s,"متسابق",`<span class="chip"><b>${esc(m.name)}</b></span><span class="chip code" style="padding-block:2px">النقاط <b style="letter-spacing:0;font-size:18px">${m.score||0}</b></span>`)}
-${banner(s,"انتظر بدء السؤال… انظر لشاشة العرض")}
-${s.phase=="q"&&!s.turn&&!tried?`<button class="bell r" ${ring==s.round?"disabled":""} onclick="bell()">${ring==s.round?'<span class="spin" style="width:56px;height:56px;border-width:4px"></span>':I("bell")}<span>${ring==s.round?"قُرع الجرس…":"قرع الجرس"}</span></button>`:""}
-${s.phase=="q"&&mine?`<section class="card case"><h3>${I("key")} اكتب إجابتك</h3><div class="row"><input id="an" class="grow" style="flex:1 1 180px;width:auto" autocomplete="off" placeholder="الإجابة هنا" onkeydown="if(event.key=='Enter')send()"><button onclick="send()">${I("send")} إرسال</button></div></section>`:""}
-${s.phase=="q"&&tried?`<div class="note">${I("x")}<span>أجبت خطأً في هذا السؤال، دور غيرك الآن</span></div>`:""}
-<section class="card"><h3>${I("grid")} خريطة الشفرة</h3>${mapH()}</section>`}
-a.innerHTML=h;Object.entries(keep).forEach(([k,v])=>{const e=$(k);if(e)e.value=v});if(f&&$(f)){$(f).focus()}
+else{const m=me()||{},mine=s.turn==V.pid,tried=(s.tried||[]).includes(V.pid),q=s.phase=="q",ws=s.emoji?s.emoji.split("|"):[],ns=ws.reduce((n,w)=>n+w.split(" ").length,0),won=wonR==s.round;
+const LOCK=t=>`<div class="ansbox lock">${I("lock")}<span>${t}</span></div>`;
+const ANS=`<section class="card case dock"><label class="ans-l" for="an">${I("key")} أدخل الشفرة المفكوكة</label><div class="ans-row"><input id="an" dir="rtl" lang="ar" inputmode="text" enterkeyhint="send" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" maxlength="60" placeholder="اكتب إجابتك هنا" onkeydown="if(event.key=='Enter')send()"><button onclick="send()">${I("send")} إرسال</button></div><p class="ans-n">الدور لك الآن. اكتب الإجابة بالحروف العربية ثم أرسل.</p></section>`;
+const ANSW=`<div class="st-a"><span>الإجابة</span>${esc(s.ans)}</div>`;
+const RES=s.res?.ok?`<div class="res ok"><div class="emblem">${I("check")}</div><h2>${won?"أحسنت أيها المحقق":"حُلّت القضية"}</h2><p>${won?'كسبت <b dir="ltr">+10</b> نقاط':esc(s.res.n)+" أجاب إجابة صحيحة"}</p>${ANSW}</div>`:
+s.res?.to?`<div class="res to"><div class="emblem">${I("clock")}</div><span class="stamp">انتهى الوقت</span><h2>انتهى التحدي</h2><p>لم تُفك شفرة هذه القضية في الوقت المحدد.</p>${ANSW}<p style="margin:12px 0 0">استعد للقضية التالية${DOTS}</p></div>`:
+`<div class="res"><div class="emblem">${I("eye")}</div><h2>كُشف الحل</h2><p>أغلق المنظّم هذه القضية.</p>${ANSW}</div>`;
+h=`<div class="sticky">${hud(s,m,q&&mine)}${q&&mine?ANS:""}</div>
+<section class="card case file"><div class="case-h"><span>${I("search")} ملف القضية</span><span class="stamp">سري</span></div>
+${s.phase=="lobby"?`<div class="res"><div class="emblem pulse">${I("clock")}</div><h2>بانتظار فتح الملف</h2><p>سيبدأ المنظّم القضية الأولى بعد قليل. انظر إلى شاشة العرض${DOTS}</p></div>`:s.phase=="reveal"?RES:
+`<h2 class="case-t">القضية رقم ${s.qn||1}</h2><p class="case-d">شفرة غامضة ظهرت على شاشة العرض. فُكّ رموزها بالأدلة التي أمامك، ثم اقرع الجرس قبل غيرك لتدلي بإجابتك.</p>
+<div class="ev"><span class="chip">الكلمات <b>${ws.length}</b></span><span class="chip">الرموز <b>${ns}</b></span><span class="chip">المهلة <b>${s.dur} ثانية</b></span></div>
+${mine?stt("turn","key","الدور لك، أدخل الشفرة في الأعلى"):s.turn?stt("turn","bell",`الجرس عند ${esc(s.turnName)}`)+LOCK("حقل الإجابة مقفل حتى ينتهي دوره"):tried?`<div class="note" style="margin:0">${I("x")}<span>أجبت خطأً في هذه القضية، الدور لغيرك الآن</span></div>`+LOCK("استنفدت محاولتك في هذه القضية"):`<button class="bell r" ${ring==s.round?"disabled":""} onclick="bell()">${ring==s.round?'<span class="spin" style="width:56px;height:56px;border-width:4px"></span>':I("bell")}<span>${ring==s.round?"قُرع الجرس…":"قرع الجرس"}</span></button>`+LOCK("اقرع الجرس لفتح حقل الإجابة")}`}</section>
+<section class="card"><h3>${I("grid")} الأدلة: خريطة الشفرة</h3>${mapH()}</section>`}
+if(document.body)document.body.classList.toggle("room",V.role=="p"&&!!s&&s.phase!="end");
+a.innerHTML=h;Object.entries(keep).forEach(([k,v])=>{const e=$(k);if(e)e.value=v});if(f&&$(f)){$(f).focus()}if(foc){foc=0;const e=$("an");if(e)e.focus()}
 const k=V.role+"|"+(s?s.phase+s.round:"")+(db?1:0);if(k!=vk&&a.classList){vk=k;a.classList.remove("in");void a.offsetWidth;a.classList.add("in");clearTimeout(vt);vt=setTimeout(()=>a.classList.remove("in"),2200)}}
 setInterval(()=>{const s=V.st,t=$("tm");if(!s||s.phase!="q")return;const r=rem(s);if(t){t.textContent=r;t.parentElement.classList.toggle("urgent",r<=10);const b=$("tb");if(b)b.style.width=Math.min(100,r/s.dur*100)+"%"}if(r!=lastR){lastR=r;if(r>0&&r<=10)snd(r<=3?"tick2":"tick")}if(V.role=="h"&&rem(s)<=0&&cur)reveal({to:1})},500);
 try{firebase.initializeApp({apiKey:"AIzaSyCvWPsDejIi-4l4rL1HdaI8QfTHtXkXuL0",authDomain:"thecodegame-490ff.firebaseapp.com",projectId:"thecodegame-490ff",storageBucket:"thecodegame-490ff.firebasestorage.app",messagingSenderId:"218759727905",appId:"1:218759727905:web:de0e4943e3c61e57d88c60"});db=firebase.firestore()}catch(e){}
