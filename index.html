@@ -120,8 +120,7 @@ ${s.phase!="lobby"?`<div class="card"><div class="big">${qH(s)}</div><div class=
 <div class="card"><h3>المتسابقون (${V.ps.length})</h3>${board()}<button class="s" onclick="resetAll()" style="margin-top:8px">تصفير النقاط</button></div></div>`;
 else{const m=me()||{},mine=s.turn==V.pid,tried=(s.tried||[]).includes(V.pid);
 h=`<div class="row"><b class="grow">${esc(m.name)} · ${m.score||0} نقطة</b><span class="tm" id="tm">${s.phase=="q"?rem(s):""}</span></div>
-${s.phase!="lobby"?`<div class="card"><div class="big">${qH(s)}</div></div>`:""}
-<div class="card ban">${s.phase=="lobby"?"انتظر بدء السؤال…":banner(s)}</div>
+<div class="card ban">${s.phase=="lobby"?"انتظر بدء السؤال… انظر لشاشة العرض":banner(s)}</div>
 ${s.phase=="q"&&!s.turn&&!tried?`<button class="bell" ${ring==s.round?"disabled":""} onclick="bell()">🔔 ${ring==s.round?"قُرع الجرس…":"قرع الجرس"}</button>`:""}
 ${s.phase=="q"&&mine?`<div class="card"><h3>اكتب إجابتك</h3><div class="row"><input id="an" class="grow" autocomplete="off"><button onclick="send()">إرسال</button></div></div>`:""}
 ${s.phase=="q"&&tried?'<div class="card mu">أجبت خطأً في هذا السؤال، دور غيرك الآن</div>':""}
