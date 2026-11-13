@@ -109,7 +109,7 @@ ${s.phase=="q"&&tried?'<div class="card mu">أجبت خطأً في هذا الس
 <details class="card"><summary>خريطة الشفرة</summary>${mapH()}</details>`}
 a.innerHTML=h;Object.entries(keep).forEach(([k,v])=>{const e=$(k);if(e)e.value=v});if(f&&$(f)){$(f).focus()}}
 setInterval(()=>{const s=V.st,t=$("tm");if(!s||s.phase!="q")return;if(t)t.textContent=rem(s);if(V.role=="h"&&rem(s)<=0&&cur)reveal({to:1})},500);
-try{firebase.initializeApp({apiKey:"AIzaSyDUWr83DcHhXndF79v4yyph041GoVCr1J4",authDomain:"hadeer-attendance.firebaseapp.com",projectId:"hadeer-attendance",storageBucket:"hadeer-attendance.firebasestorage.app",messagingSenderId:"247535308843",appId:"1:247535308843:web:ef95059118d08d66801a6e"});db=firebase.firestore()}catch(e){}
+try{firebase.initializeApp({apiKey:"AIzaSyCvWPsDejIi-4l4rL1HdaI8QfTHtXkXuL0",authDomain:"thecodegame-490ff.firebaseapp.com",projectId:"thecodegame-490ff",storageBucket:"thecodegame-490ff.firebasestorage.app",messagingSenderId:"218759727905",appId:"1:218759727905:web:de0e4943e3c61e57d88c60"});db=firebase.firestore()}catch(e){}
 window.addEventListener("unhandledrejection",e=>{toast(e.reason&&e.reason.code=="permission-denied"?"قواعد قاعدة البيانات لا تسمح بعد — انظر firestore.rules":"تعذر الاتصال، حاول مجدداً")});
 render();
 </script></body></html>
