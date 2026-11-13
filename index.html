@@ -120,6 +120,7 @@ label.f{display:grid;gap:6px;font-size:14px;color:var(--muted);margin-bottom:var
 .sc{position:relative;isolation:isolate}.sc::before{content:"";position:absolute;inset:0 0 0 auto;width:var(--w,0%);z-index:-1;border-radius:inherit;background:linear-gradient(270deg,rgba(var(--acc-rgb),.11),rgba(var(--acc-rgb),0));transition:width .5s ease}
 .sc.me{border-color:var(--line-acc)}.sc em{font-style:normal;font-size:13px;color:var(--acc-hi);margin-inline-start:6px;padding:0 8px;border-radius:var(--r-pill);border:1px solid var(--line-acc)}
 .sc b{min-width:3ch;text-align:left}
+.queue{margin-top:var(--s4)}.queue h4{margin:0 0 var(--s2);font-size:14px;font-weight:500;color:var(--muted)}.queue small{color:var(--muted);font-size:13px;font-variant-numeric:tabular-nums}
 .board{max-height:min(62vh,560px);overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin;margin-inline:-4px;padding-inline:4px}
 .empty{display:grid;place-items:center;gap:var(--s2);padding:var(--s5) 0;color:var(--faint);text-align:center}.empty .i{width:34px;height:34px}
 .rules{display:flex;flex-wrap:wrap;gap:6px;margin-top:var(--s4);padding-top:var(--s4);border-top:1px solid var(--line)}
@@ -312,7 +313,7 @@ shield:'<path d="M12 2l8 3v6c0 5-3.5 9-8 11-4.5-2-8-6-8-11V5l8-3z"/>',alert:'<pa
 search:'<circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/>',info:'<circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 7.5v.01"/>',sliders:'<path d="M4 6h10M18 6h2M4 12h2M10 12h10M4 18h12M20 18h0"/><circle cx="16" cy="6" r="2"/><circle cx="8" cy="12" r="2"/><circle cx="18" cy="18" r="2"/>'};
 const I=n=>`<svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${IC[n]}</svg>`;
 const SPIN='<span class="spin"></span>';const MU=()=>`<button id="mu" class="s" onclick="tgm()" aria-label="تشغيل أو كتم الصوت">${I(mute?"mute":"vol")}</button>`;let busy="",vk="",vk2="",vr=null,st2=0,tt=0,conn=0;
-let AC=null,mute=false,t0=0,t0r=-1,ring=0,lastR=-1;try{mute=localStorage.getItem("mute")=="1"}catch(e){}
+let AC=null,mute=false,t0=0,t0r=-1,lastR=-1;try{mute=localStorage.getItem("mute")=="1"}catch(e){}
 const unlock=()=>{try{AC=AC||new (window.AudioContext||window.webkitAudioContext)();if(AC.state=="suspended")AC.resume()}catch(e){}};
 addEventListener("pointerdown",unlock,true);addEventListener("keydown",unlock,true);
 function tone(f,t,d,ty,v){const o=AC.createOscillator(),g=AC.createGain(),a=AC.currentTime+t;o.type=ty||"sine";o.frequency.value=f;g.gain.setValueAtTime(.0001,a);g.gain.exponentialRampToValueAtTime(v||.25,a+.01);g.gain.exponentialRampToValueAtTime(.0001,a+d);o.connect(g);g.connect(AC.destination);o.start(a);o.stop(a+d+.02)}
@@ -329,15 +330,21 @@ function flash(k,t,u,ms){const e=$("fxo");if(!e)return;e.className="";void e.off
 e.innerHTML=`<div class="fx-in">${k=="ok"?'<svg class="okc" viewBox="0 0 80 80"><circle cx="40" cy="40" r="34"/><path d="M24 41l11 11 21-23"/></svg>':k=="no"?I("x"):"<small>ملف جديد</small>"}<b>${t}</b>${u?`<span>${u}</span>`:""}</div>`;
 e.className="on fx-"+k;clearTimeout(ft);ft=setTimeout(()=>e.className="",ms)}
 function fx(o,d){if(!o||!d)return;const p=V.role=="p",my=(me()||{}).score||0;
-if(d.round!=o.round){t0=Date.now();t0r=d.round;lastR=-1;snd("nq");if(V.role!="h")flash("stage","القضية رقم "+(d.qn||1),"المرحلة: "+LV[d.level],1150)}
+if(d.round!=o.round){t0=Date.now();t0r=d.round;lastR=-1;snd("nq");keep.an="";{const e=$("an");if(e)e.value=""}if(V.role!="h")flash("stage","القضية رقم "+(d.qn||1),"المرحلة: "+LV[d.level],1150)}
 else if(d.phase=="end"&&o.phase!="end")snd("fin");
-else if(d.phase=="reveal"&&o.phase=="q"){snd(d.res&&d.res.ok?"ok":d.res&&d.res.to?"to":"rev");if(p&&d.res&&d.res.ok&&o.turn==V.pid){wonR=d.round;flash("ok","إجابة صحيحة",'<bdi dir="ltr">+10</bdi> نقاط',1500)}}
-else if(d.turn&&d.turn!=o.turn){snd("bell");if(p&&d.turn==V.pid){sc0=my;foc=1}}
-else if((d.tried||[]).length>(o.tried||[]).length){snd("no");if(p&&d.tried.includes(V.pid)&&!(o.tried||[]).includes(V.pid)){flash("no","محاولة خاطئة",my<sc0?'<bdi dir="ltr">−'+(sc0-my)+"</bdi>":"",1000);const a=$("app");if(a&&a.classList){a.classList.add("shk");setTimeout(()=>a.classList.remove("shk"),500)}}}}
+else if(d.phase=="reveal"&&o.phase=="q"){snd(d.res&&d.res.ok?"ok":d.res&&d.res.to?"to":"rev");if(p&&d.res&&d.res.ok&&lastT==V.pid){wonR=d.round;flash("ok","إجابة صحيحة",'<bdi dir="ltr">+10</bdi> نقاط',1500)}}
+else if((d.tried||[]).length>(o.tried||[]).length){snd("no");noAt=Date.now();if(p&&d.tried.includes(V.pid)&&!(o.tried||[]).includes(V.pid)){flash("no","محاولة خاطئة",my<sc0?'<bdi dir="ltr">−'+(sc0-my)+"</bdi>":"",1000);const a=$("app");if(a&&a.classList){a.classList.add("shk");setTimeout(()=>a.classList.remove("shk"),500)}}}}
 const toast=m=>{const t=$("toast"),k=/^(تم|أضيف|نُسخ)/.test(m)?"ok":/(غير|تعذر|لا تسمح|اكتب)/.test(m)?"err":"";t.className="show "+k;t.innerHTML=I(k=="ok"?"check":k=="err"?"alert":"info")+"<span>"+esc(m)+"</span>";clearTimeout(tt);tt=setTimeout(()=>t.className=k,2800)};
 const G=()=>db.doc("g/"+V.code),P=()=>db.collection("g/"+V.code+"/p");
 const me=()=>V.ps.find(p=>p.id==V.pid);
 const mapH=()=>`<div class="map">${GR.map(([l,e])=>`<div><b>${e}</b><span>${l.replace("-"," ")}</span></div>`).join("")}</div>`;
+const bt=p=>p.bell&&p.bell.toMillis?p.bell.toMillis():+p.bell||0;
+const queue=()=>{const s=V.st;if(!s||s.phase!="q")return[];const tr=s.tried||[];return V.ps.filter(p=>p.bellRound==s.round&&bt(p)&&!tr.includes(p.id)).sort((a,b)=>bt(a)-bt(b)||(a.id<b.id?-1:1))};
+const turnId=()=>{const q=queue();return q.length?q[0].id:""};
+const queueH=()=>{const q=queue();return q.length?`<div class="queue"><h4>ترتيب قرع الجرس</h4>${q.map((p,i)=>`<div class="sc${i?"":" m1"}"><span class="rk">${i+1}</span><span class="nm">${esc(p.name)}</span><small dir="ltr">${i?"+"+((bt(p)-bt(q[0]))/1000).toFixed(2)+" ث":"الدور الآن"}</small></div>`).join("")}</div>`:""};
+const nextH=()=>{const q=queue();return q.length>1?`<div class="ev" style="margin:0;justify-content:flex-start"><span class="chip">التالي في الدور</span>${q.slice(1,7).map((p,i)=>`<span class="chip"><b>${i+2}</b> ${esc(p.name)}</span>`).join("")}</div>`:""};
+let lastT="",noAt=0;
+function turnHook(){const t=turnId();if(t==lastT)return;lastT=t;if(!t)return;setTimeout(()=>snd("bell"),Date.now()-noAt<700?450:0);if(V.role=="p"&&t==V.pid){sc0=(me()||{}).score||0;foc=1}}
 const rkOf=id=>{const m=V.ps.find(p=>p.id==id);return m?1+V.ps.filter(p=>(p.score||0)>(m.score||0)).length:0};
 const board=()=>{const a=[...V.ps].sort((x,y)=>(y.score||0)-(x.score||0)),mx=Math.max(1,...a.map(p=>p.score||0));
 return a.length?`<div class="board">${a.map(p=>{const sc=p.score||0,r=rkOf(p.id);return `<div class="sc${sc>0&&r<=3?" m"+r:""}${p.id==V.pid?" me":""}" style="--w:${Math.round(Math.max(0,sc)/mx*100)}%"><span class="rk">${r}</span><span class="nm">${esc(p.name)}${p.id==V.pid?" <em>أنت</em>":""}</span><b>${sc}</b></div>`}).join("")}</div>`:`<div class="empty">${I("users")}<span>لا يوجد متسابقون بعد</span></div>`};
@@ -346,7 +353,7 @@ const qH=s=>s.emoji?s.emoji.split("|").map(w=>`<span class="w">${w}</span>`).joi
 const rem=s=>Math.max(0,Math.ceil(((t0r==s.round?t0:s.startedAt)+s.dur*1000-Date.now())/1000));
 const stt=(k,i,t,a)=>`<div class="st st-${k}"><span class="st-i">${I(i)}</span><div><div class="st-t">${t}</div>${a?`<div class="st-a"><span>الإجابة</span>${a}</div>`:""}</div></div>`;
 const DOTS='<span class="dots"><i></i><i></i><i></i></span>';
-const banner=(s,w)=>s.phase=="reveal"?(s.res?.ok?stt("ok","check",`${esc(s.res.n)} أجاب إجابة صحيحة <span class="pts" dir="ltr">+10</span>`,esc(s.ans)):s.res?.to?stt("err","clock","انتهى الوقت",esc(s.ans)):stt("info","eye","كُشفت الإجابة",esc(s.ans))):s.phase=="q"?(s.turn?stt("turn","bell",`الجرس عند ${esc(s.turnName)}`):stt("wait","belloff","بانتظار قرع الجرس"+DOTS)):stt("wait","clock",(w||"بانتظار بدء السؤال")+DOTS);
+const banner=(s,w)=>s.phase=="reveal"?(s.res?.ok?stt("ok","check",`${esc(s.res.n)} أجاب إجابة صحيحة <span class="pts" dir="ltr">+10</span>`,esc(s.ans)):s.res?.to?stt("err","clock","انتهى الوقت",esc(s.ans)):stt("info","eye","كُشفت الإجابة",esc(s.ans))):s.phase=="q"?(queue().length?stt("turn","bell",`الجرس عند ${esc(queue()[0].name)}`):stt("wait","belloff","بانتظار قرع الجرس"+DOTS)):stt("wait","clock",(w||"بانتظار بدء السؤال")+DOTS);
 const timer=s=>`<span class="timer${s.phase!="q"?" off":rem(s)<=10?" urgent":""}">${I("clock")}<b id="tm">${s.phase=="q"?rem(s):"—"}</b></span>`;
 const topbar=(s,rl,ex)=>`<header class="top"><span class="brand">${I("lock")}<span>الشفرة السرية</span></span><span class="chip code">الرمز <b>${V.code}</b></span><span class="chip">${rl}</span>${ex||""}<span class="grow"></span>${MU()}${timer(s)}</header><div class="tbar"><i id="tb" style="width:${s.phase=="q"?Math.min(100,rem(s)/s.dur*100):0}%"></i></div>`;
 const rank=()=>[...V.ps].sort((a,b)=>(b.score||0)-(a.score||0));
@@ -380,8 +387,8 @@ pn=="org"?`<h3>${I("shield")} دخول المنظّم</h3><p class="mu" style="m
 `<h3>${I("info")} كيف تلعب؟</h3><ol class="how"><li>تظهر على شاشة العرض كلمة أو عبارة مكتوبة بالرموز.</li><li>فكّ الرموز بخريطة الشفرة، واقرأ من اليمين لليسار.</li><li>اقرع الجرس من جهازك قبل غيرك، ثم اكتب إجابتك.</li><li>اجمع أعلى النقاط قبل نفاد الوقت.</li></ol>${RULES.replace('class="rules"','class="rules" style="border:0;padding:0;margin:0 0 16px"')}<h3>${I("grid")} خريطة الشفرة</h3>${mapH()}<button class="s wide" style="margin-top:16px" onclick="pan('')">${I("check")} فهمت</button>`}</div></div>`;
 const RULES=`<div class="rules"><span class="chip ok">صح <bdi dir="ltr">+10</bdi></span><span class="chip no">خطأ <bdi dir="ltr">−5</bdi></span><span class="chip no">قرع مبكر <bdi dir="ltr">−3</bdi></span><span class="chip">القراءة من اليمين لليسار</span></div>`;
 function sub(){watch("");pn="";unsubs.forEach(u=>u());unsubs=[];
-unsubs.push(G().onSnapshot(s=>{const o=V.st;V.st=s.exists?s.data():null;fx(o,V.st);if(!V.st&&V.role){toast("اللعبة غير موجودة");V.role=null}render();logic()}));
-unsubs.push(P().onSnapshot(s=>{V.ps=s.docs.map(d=>({id:d.id,...d.data()}));render();logic()}))}
+unsubs.push(G().onSnapshot(s=>{const o=V.st;V.st=s.exists?s.data():null;fx(o,V.st);turnHook();if(!V.st&&V.role){toast("اللعبة غير موجودة");V.role=null}render();logic()}));
+unsubs.push(P().onSnapshot(s=>{V.ps=s.docs.map(d=>({id:d.id,...d.data()}));turnHook();render();logic()}))}
 async function enter(r){if(busy)return;busy=r;render();try{await enter0(r)}finally{busy="";render()}}
 async function create(){if(busy)return;busy="c";render();try{await create0()}finally{busy="";render()}}
 async function enter0(role){if(!db)return toast("جارٍ الاتصال بالخادم، حاول بعد لحظة");const code=($("code")?.value||"").trim();if(!code)return toast("اكتب رمز اللعبة");
@@ -396,7 +403,7 @@ function share(){const u=location.origin+location.pathname+"?c="+V.code;(navigat
 async function newQ(){const s=V.st,lv=$("lv")?.value||s.level,dur=+($("du")?.value||s.dur);const t=pick(lv,s.used||[],s.extra);cur=t;judged="";try{sessionStorage.setItem("cur"+V.code,t)}catch(e){}
 await up({phase:"q",round:s.round+1,qn:(s.qn||0)+1,level:lv,dur,emoji:enc(t),startedAt:Date.now(),turn:"",turnName:"",tried:[],res:null,ans:"",used:[...(s.used||[]),t].slice(-400)})}
 const reveal=res=>up({phase:"reveal",ans:cur||"—",res});
-async function mark(ok){const s=V.st,p=V.ps.find(x=>x.id==s.turn);if(!p)return;
+async function mark(ok){const s=V.st,p=V.ps.find(x=>x.id==turnId());if(!p)return;
 if(ok){await P().doc(p.id).update({score:(p.score||0)+10});reveal({n:p.name,ok:1})}else wrong(p,5)}
 async function wrong(p,n){await P().doc(p.id).update({score:(p.score||0)-n});await up({turn:"",turnName:"",tried:[...(V.st.tried||[]),p.id]})}
 let cf=0;
@@ -404,15 +411,14 @@ function endG(){if(!cf){cf=1;render();setTimeout(()=>{if(cf){cf=0;render()}},400
 const reopen=()=>up({phase:"lobby",turn:"",turnName:"",emoji:"",res:null,ans:""});
 async function resetAll(){for(const p of V.ps)await P().doc(p.id).update({score:0});up({used:[]});toast("تم تصفير النقاط")}
 async function addQ(){const t=cl($("cq").value);if(!t)return;await up({extra:[...(V.st.extra||[]),{t,l:V.st.level=="fin"||V.st.level=="mix"?"mid":V.st.level}].slice(-300)});$("cq").value="";keep.cq="";toast("أضيف السؤال وسيظهر ضمن الأسئلة القادمة")}
-async function bell(){const s=V.st,m=me();if(!s||ring==s.round)return;ring=s.round;snd("click");render();
-try{await db.runTransaction(async t=>{const x=(await t.get(G())).data();if(!x||x.phase!="q"||x.round!=s.round||x.turn||(x.tried||[]).includes(V.pid))return;t.update(G(),{turn:V.pid,turnName:m?m.name:""})})}catch(e){}
-ring=0;render()}
-async function send(){const v=$("an").value.trim();if(!v)return;keep.an="";await P().doc(V.pid).update({ans:v,ansRound:V.st.round,aid:Math.random().toString(36).slice(2)})}
+const TS=()=>window.firebase&&firebase.firestore&&firebase.firestore.FieldValue?firebase.firestore.FieldValue.serverTimestamp():Date.now();
+async function bell(){const s=V.st,m=me();if(!s||s.phase!="q"||!m||m.bellRound==s.round||(s.tried||[]).includes(V.pid))return;snd("click");await P().doc(V.pid).update({bell:TS(),bellRound:s.round})}
+async function send(){const v=$("an").value.trim();if(!v)return;keep.an="";$("an").value="";await P().doc(V.pid).update({ans:v,ansRound:V.st.round,aid:Math.random().toString(36).slice(2)})}
 function logic(){if(V.role!="h"||!V.st)return;const s=V.st;if(s.phase!="q")return;
-if(!s.turn)return;
-const p=V.ps.find(x=>x.id==s.turn);if(p&&p.ansRound==s.round&&p.aid&&p.aid!=judged&&cur){judged=p.aid;if(norm(p.ans)==norm(cur)){P().doc(p.id).update({score:(p.score||0)+10});reveal({n:p.name,ok:1})}else wrong(p,5)}}
+const t=turnId();if(!t)return;
+const p=V.ps.find(x=>x.id==t);if(p&&p.ansRound==s.round&&p.aid&&p.aid!=judged&&cur){judged=p.aid;if(norm(p.ans)==norm(cur)){P().doc(p.id).update({score:(p.score||0)+10});reveal({n:p.name,ok:1})}else wrong(p,5)}}
 function render(){const a=$("app");if(!a)return;document.querySelectorAll("input,select").forEach(e=>{if(e.id)keep[e.id]=e.value});const f=document.activeElement?.id;
-const s=V.st;let h="";const dis=busy?"disabled":"",pop=pn&&pn!=lp;lp=pn;if(window.fxOn)fxOn(!V.role);
+const s=V.st;let h="";const T=s?turnId():"";const dis=busy?"disabled":"",pop=pn&&pn!=lp;lp=pn;if(window.fxOn)fxOn(!V.role);
 if(conn==2)h=`<section class="hero"><div class="emblem">${I("lock")}</div><h1>الشفرة السرية</h1></section><div class="st st-err">${`<span class="st-i">${I("alert")}</span>`}<div><div class="st-t">تعذر الاتصال بالخادم</div><p class="mu">تحقق من اتصالك بالإنترنت ثم أعد تحميل الصفحة.</p></div></div>`;
 else if(!V.role)h=`<div class="gate"><i class="orb a"></i><i class="orb b"></i>
 <div class="gate-top">${stat("stt")}${MU()}</div>
@@ -424,20 +430,20 @@ else if(!V.role)h=`<div class="gate"><i class="orb a"></i><i class="orb b"></i>
 else if(!s)h=`<div class="load"><span class="spin"></span><p>جارٍ فتح ملف القضية…</p></div>`;
 else if(s.phase=="end")h=endView(s);
 else if(V.role=="d")h=`${topbar(s,"شاشة العرض",`<span class="chip">المستوى <b>${LV[s.level]}</b></span><span class="chip">سؤال <b>${s.qn||0}</b></span>`)}
-<div class="two"><div class="stack"><section class="card case qbox">${s.phase=="lobby"?`<div class="lobby"><div class="emblem">${I("lock")}</div><h2>انضموا إلى التحقيق</h2><p class="join">ادخلوا الموقع واكتبوا رمز اللعبة</p><b class="bigcode">${V.code}</b><p class="mu">${V.ps.length} متسابق في الانتظار</p></div>`:`<div class="case-h"><span>${I("search")} الشفرة رقم ${s.qn||0}</span><span class="stamp">سري</span></div><div class="big xl">${qH(s)}</div>`}</section>${banner(s)}</div>
+<div class="two"><div class="stack"><section class="card case qbox">${s.phase=="lobby"?`<div class="lobby"><div class="emblem">${I("lock")}</div><h2>انضموا إلى التحقيق</h2><p class="join">ادخلوا الموقع واكتبوا رمز اللعبة</p><b class="bigcode">${V.code}</b><p class="mu">${V.ps.length} متسابق في الانتظار</p></div>`:`<div class="case-h"><span>${I("search")} الشفرة رقم ${s.qn||0}</span><span class="stamp">سري</span></div><div class="big xl">${qH(s)}</div>`}</section>${banner(s)}${nextH()}</div>
 <aside class="card"><h3>${I("trophy")} الترتيب</h3>${board()}${RULES}</aside></div>
 <section class="card"><h3>${I("grid")} خريطة الشفرة</h3>${mapH()}</section>`;
 else if(V.role=="h")h=`${topbar(s,"المنظّم",`<button class="s" onclick="share()">${I("link")} نسخ رابط الدعوة</button>`)}
 <p class="hint">أعطِ المتسابقين الرمز، وافتح «شاشة العرض» بنفس الرمز على الشاشة.</p>
 <div class="two"><div class="stack"><section class="card"><h3>${I("sliders")} التحكم بالسؤال</h3><div class="row"><select id="lv" aria-label="المستوى">${Object.entries(LV).map(([k,v])=>`<option value="${k}" ${k==s.level?"selected":""}>${v}</option>`).join("")}</select>
 <select id="du" aria-label="مدة السؤال">${[30,45,60,90,120].map(x=>`<option value="${x}" ${x==s.dur?"selected":""}>${x} ثانية</option>`).join("")}</select><button class="g grow" onclick="newQ()">${I("play")} ${s.phase=="lobby"?"ابدأ السؤال الأول":"سؤال جديد"}</button></div></section>
-${s.phase!="lobby"?`<section class="card case"><div class="case-h"><span>${I("search")} الشفرة رقم ${s.qn||0}</span><span class="stamp">سري</span></div><div class="big">${qH(s)}</div><p class="ans-h">الإجابة (للمنظّم): <b>${esc(cur||"—")}</b></p>${banner(s)}
-<div class="row act" style="margin-top:16px"><button class="g" ${s.turn&&s.phase=="q"?"":"disabled"} onclick="mark(1)">${I("check")} صح <bdi dir="ltr">+10</bdi></button><button class="r" ${s.turn&&s.phase=="q"?"":"disabled"} onclick="mark(0)">${I("x")} خطأ <bdi dir="ltr">−5</bdi></button>
-<button class="r" ${s.turn&&s.phase=="q"?"":"disabled"} onclick="wrong(V.ps.find(x=>x.id==V.st.turn),3)">${I("bell")} قرع مبكر <bdi dir="ltr">−3</bdi></button><button class="s" onclick="reveal({})">${I("eye")} كشف الإجابة</button></div></section>`:""}
+${s.phase!="lobby"?`<section class="card case"><div class="case-h"><span>${I("search")} الشفرة رقم ${s.qn||0}</span><span class="stamp">سري</span></div><div class="big">${qH(s)}</div><p class="ans-h">الإجابة (للمنظّم): <b>${esc(cur||"—")}</b></p>${banner(s)}${queueH()}
+<div class="row act" style="margin-top:16px"><button class="g" ${T&&s.phase=="q"?"":"disabled"} onclick="mark(1)">${I("check")} صح <bdi dir="ltr">+10</bdi></button><button class="r" ${T&&s.phase=="q"?"":"disabled"} onclick="mark(0)">${I("x")} خطأ <bdi dir="ltr">−5</bdi></button>
+<button class="r" ${T&&s.phase=="q"?"":"disabled"} onclick="wrong(V.ps.find(x=>x.id==turnId()),3)">${I("bell")} قرع مبكر <bdi dir="ltr">−3</bdi></button><button class="s" onclick="reveal({})">${I("eye")} كشف الإجابة</button></div></section>`:""}
 <section class="card"><h3>${I("plus")} إضافة أسئلة</h3><div class="row"><input id="cq" class="grow" style="flex:1 1 220px;width:auto" placeholder="كلمة أو عبارة تتحول لرموز تلقائياً"><button onclick="addQ()">${I("plus")} إضافة</button></div>
 <p class="mu" style="margin-top:12px;font-size:14px">عدد الأسئلة المتاحة في المستوى المختار: ${pool(s.level,s.extra).length} · لا يتكرر السؤال ما دامت هناك أسئلة غير مستخدمة.</p></section></div>
 <aside class="card"><h3>${I("users")} المتسابقون (${V.ps.length})</h3>${board()}<button class="s wide" onclick="resetAll()" style="margin-top:16px">${I("reset")} تصفير النقاط</button><button class="${cf?"r":"s"} wide" onclick="endG()" style="margin-top:8px">${I(cf?"alert":"x")} ${cf?"اضغط مرة أخرى للتأكيد":"إنهاء المسابقة"}</button></aside></div>`;
-else{const m=me()||{},mine=s.turn==V.pid,tried=(s.tried||[]).includes(V.pid),q=s.phase=="q",ws=s.emoji?s.emoji.split("|"):[],ns=ws.reduce((n,w)=>n+w.split(" ").length,0),won=wonR==s.round;
+else{const m=me()||{},mine=T==V.pid,rung=m.bellRound==s.round,pos=queue().findIndex(p=>p.id==V.pid)+1,TN=T?queue()[0].name:"",tried=(s.tried||[]).includes(V.pid),q=s.phase=="q",ws=s.emoji?s.emoji.split("|"):[],ns=ws.reduce((n,w)=>n+w.split(" ").length,0),won=wonR==s.round;
 const LOCK=t=>`<div class="ansbox lock">${I("lock")}<span>${t}</span></div>`;
 const ANS=`<section class="card case dock"><label class="ans-l" for="an">${I("key")} أدخل الشفرة المفكوكة</label><div class="ans-row"><input id="an" dir="rtl" lang="ar" inputmode="text" enterkeyhint="send" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" maxlength="60" placeholder="اكتب إجابتك هنا" onkeydown="if(event.key=='Enter')send()"><button onclick="send()">${I("send")} إرسال</button></div><p class="ans-n">الدور لك الآن. اكتب الإجابة بالحروف العربية ثم أرسل.</p></section>`;
 const ANSW=`<div class="st-a"><span>الإجابة</span>${esc(s.ans)}</div>`;
@@ -449,11 +455,11 @@ h=`<div class="sticky">${hud(s,m,q&&mine)}${q&&mine?ANS:""}</div>
 ${s.phase=="lobby"?`<div class="res"><div class="emblem pulse">${I("clock")}</div><h2>بانتظار فتح الملف</h2><p>سيبدأ المنظّم القضية الأولى بعد قليل. انظر إلى شاشة العرض${DOTS}</p></div>`:s.phase=="reveal"?RES:
 `<h2 class="case-t">القضية رقم ${s.qn||1}</h2><p class="case-d">شفرة غامضة ظهرت على شاشة العرض. فُكّ رموزها بالأدلة التي أمامك، ثم اقرع الجرس قبل غيرك لتدلي بإجابتك.</p>
 <div class="ev"><span class="chip">الكلمات <b>${ws.length}</b></span><span class="chip">الرموز <b>${ns}</b></span><span class="chip">المهلة <b>${s.dur} ثانية</b></span></div>
-${mine?stt("turn","key","الدور لك، أدخل الشفرة في الأعلى"):s.turn?stt("turn","bell",`الجرس عند ${esc(s.turnName)}`)+LOCK("حقل الإجابة مقفل حتى ينتهي دوره"):tried?`<div class="note" style="margin:0">${I("x")}<span>أجبت خطأً في هذه القضية، الدور لغيرك الآن</span></div>`+LOCK("استنفدت محاولتك في هذه القضية"):`<button class="bell r" ${ring==s.round?"disabled":""} onclick="bell()">${ring==s.round?'<span class="spin" style="width:56px;height:56px;border-width:4px"></span>':I("bell")}<span>${ring==s.round?"قُرع الجرس…":"قرع الجرس"}</span></button>`+LOCK("اقرع الجرس لفتح حقل الإجابة")}`}</section>
+${mine?stt("turn","key","الدور لك، أدخل الشفرة في الأعلى"):tried?`<div class="note" style="margin:0">${I("x")}<span>أجبت خطأً في هذه القضية، الدور لغيرك الآن</span></div>`+LOCK("استنفدت محاولتك في هذه القضية"):pos?stt("turn","bell",`أنت رقم ${pos} في الدور`)+LOCK(`الدور الآن عند ${esc(TN)}، ويُفتح الحقل عند وصول دورك`):(T?stt("turn","bell",`الجرس عند ${esc(TN)}`):"")+`<button class="bell r" ${rung?"disabled":""} onclick="bell()">${rung?'<span class="spin" style="width:56px;height:56px;border-width:4px"></span>':I("bell")}<span>${rung?"جارٍ تسجيل قرعتك…":"قرع الجرس"}</span></button>`+LOCK(T?"اقرع الجرس لتدخل الدور بعده":"اقرع الجرس لفتح حقل الإجابة")}`}</section>
 <section class="card"><h3>${I("grid")} الأدلة: خريطة الشفرة</h3>${mapH()}</section></div>`}
 if(document.body){document.body.classList.toggle("room",V.role=="p"&&!!s&&s.phase!="end");document.body.classList.toggle("modal",!V.role&&!!pn)}
 a.innerHTML=h;Object.entries(keep).forEach(([k,v])=>{const e=$(k);if(e)e.value=v});if(f&&$(f)){$(f).focus()}if(foc){foc=0;const e=$("an");if(e)e.focus()}
-const k=V.role+"|"+(s?s.phase+s.round:""),k2=s?[s.turn,(s.tried||[]).length,ring].join():"";
+const k=V.role+"|"+(s?s.phase+s.round:""),k2=s?[T,(s.tried||[]).length,queue().length,(me()||{}).bellRound].join():"";
 if(V.role!=vr){vr=V.role;if(window.scrollTo)scrollTo(0,0)}
 if(a.classList){if(k!=vk){vk=k;vk2=k2;a.classList.remove("in","sw");void a.offsetWidth;a.classList.add("in");clearTimeout(vt);vt=setTimeout(()=>a.classList.remove("in"),2200)}
 else if(k2!=vk2){vk2=k2;a.classList.remove("sw");void a.offsetWidth;a.classList.add("sw");clearTimeout(st2);st2=setTimeout(()=>a.classList.remove("sw"),400)}}}
