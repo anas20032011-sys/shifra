@@ -28,7 +28,7 @@ button{cursor:pointer;background:var(--pr);color:#fff;border:0;font-weight:700}b
 .tag{display:inline-block;background:var(--bg);border-radius:20px;padding:3px 12px;margin:2px}
 .ban{text-align:center;font-size:24px;font-weight:700;padding:10px}#toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:#111;color:#fff;padding:10px 18px;border-radius:12px;display:none}
 .two{display:grid;grid-template-columns:2fr 1fr;gap:12px}@media(max-width:800px){.two{grid-template-columns:1fr}}
-</style></head><body><div id="app"></div><div id="toast"></div>
+</style></head><body><div id="app"></div><div id="toast"></div><button id="mu" class="s" onclick="tgm()" aria-label="الصوت" style="position:fixed;bottom:12px;left:12px;padding:8px 12px;z-index:5">🔊</button>
 <script>
 const GR=[["آ-أ","💤"],["ب","🎯"],["ت","🔋"],["ث","💡"],["ج","💣"],["ح","🧩"],["خ","🥇"],["د","🎤"],["ذ","🌊"],["ر","🕶"],["ع","📿"],["غ","🛎"],["ف","🔑"],["ز","🌓"],["س","⏰"],["ش","🚀"],["ص","🥊"],["ض","🧱"],["ط","🪓"],["ظ","📚"],["ق","🎥"],["ك","📻"],["ل","🎬"],["م","👑"],["ن","🧠"],["ه","💼"],["و","🦊"],["ي-ئ","🍔"],["إ-ء","💰"],["ة","⛱️"]];
 const CM={};GR.forEach(([l,e])=>l.split("-").forEach(c=>CM[c]=e));CM["ا"]=CM["أ"];CM["ى"]=CM["ي"];CM["ؤ"]=CM["و"];
@@ -45,17 +45,33 @@ const pool=(l,ex)=>{const b=l=="fin"?[...POOL.mid,...POOL.hard]:l=="mix"?[...POO
 let seen=[];try{seen=JSON.parse(localStorage.getItem("seen")||"[]")}catch(e){}
 const pick=(l,used,ex)=>{const p=pool(l,ex);let c=p.filter(x=>!used.includes(x)&&!seen.includes(x));if(!c.length)c=p.filter(x=>!used.includes(x));if(!c.length)c=p;const t=c[Math.floor(Math.random()*c.length)];seen=[...seen,t].slice(-3000);try{localStorage.setItem("seen",JSON.stringify(seen))}catch(e){}return t};
 let db,V={role:null,code:"",st:null,ps:[],pid:null,msg:""},cur=null,judged="",unsubs=[],keep={};
-const $=id=>document.getElementById(id);const toast=m=>{const t=$("toast");t.textContent=m;t.style.display="block";setTimeout(()=>t.style.display="none",2600)};
+const $=id=>document.getElementById(id);
+let AC=null,mute=false,t0=0,t0r=-1,ring=0,lastR=-1;try{mute=localStorage.getItem("mute")=="1"}catch(e){}
+const unlock=()=>{try{AC=AC||new (window.AudioContext||window.webkitAudioContext)();if(AC.state=="suspended")AC.resume()}catch(e){}};
+addEventListener("pointerdown",unlock,true);addEventListener("keydown",unlock,true);
+function tone(f,t,d,ty,v){const o=AC.createOscillator(),g=AC.createGain(),a=AC.currentTime+t;o.type=ty||"sine";o.frequency.value=f;g.gain.setValueAtTime(.0001,a);g.gain.exponentialRampToValueAtTime(v||.25,a+.01);g.gain.exponentialRampToValueAtTime(.0001,a+d);o.connect(g);g.connect(AC.destination);o.start(a);o.stop(a+d+.02)}
+const SND={tick:()=>tone(900,0,.06,"square",.08),tick2:()=>tone(1300,0,.09,"square",.12),click:()=>tone(600,0,.05,"sine",.2),
+bell:()=>{tone(1568,0,.9,"sine",.3);tone(2349,0,.6,"sine",.15);tone(3136,0,.3,"sine",.08)},
+ok:()=>{tone(784,0,.15);tone(988,.12,.15);tone(1319,.24,.4)},
+no:()=>{tone(160,0,.45,"sawtooth",.2);tone(120,0,.45,"square",.1)},
+to:()=>{tone(440,0,.25,"square",.15);tone(330,.25,.25,"square",.15);tone(220,.5,.5,"square",.15)},
+rev:()=>tone(660,0,.25),nq:()=>{tone(523,0,.1);tone(784,.1,.18)}};
+function snd(k){if(mute||!AC)return;try{SND[k]()}catch(e){}}
+function tgm(){mute=!mute;try{localStorage.setItem("mute",mute?"1":"0")}catch(e){}$("mu").textContent=mute?"🔇":"🔊"}
+function fx(o,d){if(!o||!d)return;if(d.round!=o.round){t0=Date.now();t0r=d.round;lastR=-1;snd("nq")}
+else if(d.phase=="reveal"&&o.phase=="q")snd(d.res&&d.res.ok?"ok":d.res&&d.res.to?"to":"rev");
+else if(d.turn&&d.turn!=o.turn)snd("bell");
+else if((d.tried||[]).length>(o.tried||[]).length)snd("no")}const toast=m=>{const t=$("toast");t.textContent=m;t.style.display="block";setTimeout(()=>t.style.display="none",2600)};
 const G=()=>db.doc("g/"+V.code),P=()=>db.collection("g/"+V.code+"/p");
 const me=()=>V.ps.find(p=>p.id==V.pid);
 const mapH=()=>`<div class="map">${GR.map(([l,e])=>`<div><b>${e}</b>${l.replace("-"," ")}</div>`).join("")}</div>`;
 const board=()=>[...V.ps].sort((a,b)=>(b.score||0)-(a.score||0)).map((p,i)=>`<div class="sc"><span>${i+1}. ${esc(p.name)}</span><b>${p.score||0}</b></div>`).join("")||'<div class="mu">لا يوجد متسابقون بعد</div>';
 const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const qH=s=>s.emoji?s.emoji.split("|").map(w=>`<span class="w">${w}</span>`).join(" "):"";
-const rem=s=>Math.max(0,Math.ceil((s.startedAt+s.dur*1000-Date.now())/1000));
+const rem=s=>Math.max(0,Math.ceil(((t0r==s.round?t0:s.startedAt)+s.dur*1000-Date.now())/1000));
 const banner=s=>s.phase=="reveal"?(s.res?.ok?`🎉 ${esc(s.res.n)} أجاب صح +10<br><span class="mu">${esc(s.ans)}</span>`:`${s.res?.to?"⏰ انتهى الوقت":"الإجابة"}: <span style="color:var(--ac)">${esc(s.ans)}</span>`):s.phase=="q"?(s.turn?`🔔 الجرس عند ${esc(s.turnName)}`:"🔕 بانتظار قرع الجرس…"):"بانتظار بدء السؤال";
 function sub(){unsubs.forEach(u=>u());unsubs=[];
-unsubs.push(G().onSnapshot(s=>{V.st=s.exists?s.data():null;if(!V.st&&V.role){toast("اللعبة غير موجودة");V.role=null}render();logic()}));
+unsubs.push(G().onSnapshot(s=>{const o=V.st;V.st=s.exists?s.data():null;fx(o,V.st);if(!V.st&&V.role){toast("اللعبة غير موجودة");V.role=null}render();logic()}));
 unsubs.push(P().onSnapshot(s=>{V.ps=s.docs.map(d=>({id:d.id,...d.data()}));render();logic()}))}
 async function enter(role){const code=($("code")?.value||"").trim();if(!code)return toast("اكتب رمز اللعبة");
 const r=await db.doc("g/"+code).get();if(!r.exists)return toast("رمز غير صحيح");
@@ -74,10 +90,12 @@ if(ok){await P().doc(p.id).update({score:(p.score||0)+10});reveal({n:p.name,ok:1
 async function wrong(p,n){await P().doc(p.id).update({score:(p.score||0)-n});await up({turn:"",turnName:"",tried:[...(V.st.tried||[]),p.id]})}
 async function resetAll(){for(const p of V.ps)await P().doc(p.id).update({score:0});up({used:[]});toast("تم تصفير النقاط")}
 async function addQ(){const t=cl($("cq").value);if(!t)return;await up({extra:[...(V.st.extra||[]),{t,l:V.st.level=="fin"||V.st.level=="mix"?"mid":V.st.level}].slice(-300)});$("cq").value="";keep.cq="";toast("أضيف السؤال وسيظهر ضمن الأسئلة القادمة")}
-async function bell(){const s=V.st;await P().doc(V.pid).update({bell:Date.now(),bellRound:s.round})}
+async function bell(){const s=V.st,m=me();if(!s||ring==s.round)return;ring=s.round;snd("click");render();
+try{await db.runTransaction(async t=>{const x=(await t.get(G())).data();if(!x||x.phase!="q"||x.round!=s.round||x.turn||(x.tried||[]).includes(V.pid))return;t.update(G(),{turn:V.pid,turnName:m?m.name:""})})}catch(e){}
+ring=0;render()}
 async function send(){const v=$("an").value.trim();if(!v)return;keep.an="";await P().doc(V.pid).update({ans:v,ansRound:V.st.round,aid:Math.random().toString(36).slice(2)})}
 function logic(){if(V.role!="h"||!V.st)return;const s=V.st;if(s.phase!="q")return;
-if(!s.turn){const c=V.ps.filter(p=>p.bellRound==s.round&&!(s.tried||[]).includes(p.id)).sort((a,b)=>a.bell-b.bell)[0];if(c){judged="";up({turn:c.id,turnName:c.name})}return}
+if(!s.turn)return;
 const p=V.ps.find(x=>x.id==s.turn);if(p&&p.ansRound==s.round&&p.aid&&p.aid!=judged&&cur){judged=p.aid;if(norm(p.ans)==norm(cur)){P().doc(p.id).update({score:(p.score||0)+10});reveal({n:p.name,ok:1})}else wrong(p,5)}}
 function render(){const a=$("app");if(!a)return;document.querySelectorAll("input,select").forEach(e=>{if(e.id)keep[e.id]=e.value});const f=document.activeElement?.id;
 const s=V.st;let h="";
@@ -102,14 +120,15 @@ ${s.phase!="lobby"?`<div class="card"><div class="big">${qH(s)}</div><div class=
 <div class="card"><h3>المتسابقون (${V.ps.length})</h3>${board()}<button class="s" onclick="resetAll()" style="margin-top:8px">تصفير النقاط</button></div></div>`;
 else{const m=me()||{},mine=s.turn==V.pid,tried=(s.tried||[]).includes(V.pid);
 h=`<div class="row"><b class="grow">${esc(m.name)} · ${m.score||0} نقطة</b><span class="tm" id="tm">${s.phase=="q"?rem(s):""}</span></div>
-<div class="card ban">${s.phase=="lobby"?"انتظر بدء السؤال… انظر لشاشة العرض":banner(s)}</div>
-${s.phase=="q"&&!s.turn&&!tried?`<button class="bell" onclick="bell()">🔔 قرع الجرس</button>`:""}
+${s.phase!="lobby"?`<div class="card"><div class="big">${qH(s)}</div></div>`:""}
+<div class="card ban">${s.phase=="lobby"?"انتظر بدء السؤال…":banner(s)}</div>
+${s.phase=="q"&&!s.turn&&!tried?`<button class="bell" ${ring==s.round?"disabled":""} onclick="bell()">🔔 ${ring==s.round?"قُرع الجرس…":"قرع الجرس"}</button>`:""}
 ${s.phase=="q"&&mine?`<div class="card"><h3>اكتب إجابتك</h3><div class="row"><input id="an" class="grow" autocomplete="off"><button onclick="send()">إرسال</button></div></div>`:""}
 ${s.phase=="q"&&tried?'<div class="card mu">أجبت خطأً في هذا السؤال، دور غيرك الآن</div>':""}
-<details class="card"><summary>خريطة الشفرة</summary>${mapH()}</details>`}
+<div class="card"><h3>خريطة الشفرة</h3>${mapH()}</div>`}
 a.innerHTML=h;Object.entries(keep).forEach(([k,v])=>{const e=$(k);if(e)e.value=v});if(f&&$(f)){$(f).focus()}}
-setInterval(()=>{const s=V.st,t=$("tm");if(!s||s.phase!="q")return;if(t)t.textContent=rem(s);if(V.role=="h"&&rem(s)<=0&&cur)reveal({to:1})},500);
+setInterval(()=>{const s=V.st,t=$("tm");if(!s||s.phase!="q")return;const r=rem(s);if(t)t.textContent=r;if(r!=lastR){lastR=r;if(r>0&&r<=10)snd(r<=3?"tick2":"tick")}if(V.role=="h"&&rem(s)<=0&&cur)reveal({to:1})},500);
 try{firebase.initializeApp({apiKey:"AIzaSyCvWPsDejIi-4l4rL1HdaI8QfTHtXkXuL0",authDomain:"thecodegame-490ff.firebaseapp.com",projectId:"thecodegame-490ff",storageBucket:"thecodegame-490ff.firebasestorage.app",messagingSenderId:"218759727905",appId:"1:218759727905:web:de0e4943e3c61e57d88c60"});db=firebase.firestore()}catch(e){}
 window.addEventListener("unhandledrejection",e=>{toast(e.reason&&e.reason.code=="permission-denied"?"قواعد قاعدة البيانات لا تسمح بعد — انظر firestore.rules":"تعذر الاتصال، حاول مجدداً")});
-render();
+render();if(mute)$("mu").textContent="🔇";
 </script></body></html>
