@@ -120,6 +120,7 @@ label.f{display:grid;gap:6px;font-size:14px;color:var(--muted);margin-bottom:var
 .sc{position:relative;isolation:isolate}.sc::before{content:"";position:absolute;inset:0 0 0 auto;width:var(--w,0%);z-index:-1;border-radius:inherit;background:linear-gradient(270deg,rgba(var(--acc-rgb),.11),rgba(var(--acc-rgb),0));transition:width .5s ease}
 .sc.me{border-color:var(--line-acc)}.sc em{font-style:normal;font-size:13px;color:var(--acc-hi);margin-inline-start:6px;padding:0 8px;border-radius:var(--r-pill);border:1px solid var(--line-acc)}
 .sc b{min-width:3ch;text-align:left}
+.pts.tt{background:var(--acc-a);border-color:var(--line-acc);color:var(--acc-hi);min-width:2.2em;text-align:center}.tbar.tt{margin:var(--s3) 0 0}.tbar.tt i{transition:width .25s linear}
 .queue{margin-top:var(--s4)}.queue h4{margin:0 0 var(--s2);font-size:14px;font-weight:500;color:var(--muted)}.queue small{color:var(--muted);font-size:13px;font-variant-numeric:tabular-nums}
 .board{max-height:min(62vh,560px);overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin;margin-inline:-4px;padding-inline:4px}
 .empty{display:grid;place-items:center;gap:var(--s2);padding:var(--s5) 0;color:var(--faint);text-align:center}.empty .i{width:34px;height:34px}
@@ -333,18 +334,20 @@ function fx(o,d){if(!o||!d)return;const p=V.role=="p",my=(me()||{}).score||0;
 if(d.round!=o.round){t0=Date.now();t0r=d.round;lastR=-1;snd("nq");keep.an="";{const e=$("an");if(e)e.value=""}if(V.role!="h")flash("stage","القضية رقم "+(d.qn||1),"المرحلة: "+LV[d.level],1150)}
 else if(d.phase=="end"&&o.phase!="end")snd("fin");
 else if(d.phase=="reveal"&&o.phase=="q"){snd(d.res&&d.res.ok?"ok":d.res&&d.res.to?"to":"rev");if(p&&d.res&&d.res.ok&&lastT==V.pid){wonR=d.round;flash("ok","إجابة صحيحة",'<bdi dir="ltr">+10</bdi> نقاط',1500)}}
-else if((d.tried||[]).length>(o.tried||[]).length){snd("no");noAt=Date.now();if(p&&d.tried.includes(V.pid)&&!(o.tried||[]).includes(V.pid)){flash("no","محاولة خاطئة",my<sc0?'<bdi dir="ltr">−'+(sc0-my)+"</bdi>":"",1000);const a=$("app");if(a&&a.classList){a.classList.add("shk");setTimeout(()=>a.classList.remove("shk"),500)}}}}
+else if((d.tried||[]).length>(o.tried||[]).length){const l=d.tried[d.tried.length-1],to=l.endsWith(":t");snd("no");noAt=Date.now();if(p&&l.split(":")[0]==V.pid){flash("no",to?"انتهت مهلة الإجابة":"محاولة خاطئة",!to&&my<sc0?'<bdi dir="ltr">−'+(sc0-my)+"</bdi>":"",1000);if(!to){const a=$("app");if(a&&a.classList){a.classList.add("shk");setTimeout(()=>a.classList.remove("shk"),500)}}}}}
 const toast=m=>{const t=$("toast"),k=/^(تم|أضيف|نُسخ)/.test(m)?"ok":/(غير|تعذر|لا تسمح|اكتب)/.test(m)?"err":"";t.className="show "+k;t.innerHTML=I(k=="ok"?"check":k=="err"?"alert":"info")+"<span>"+esc(m)+"</span>";clearTimeout(tt);tt=setTimeout(()=>t.className=k,2800)};
 const G=()=>db.doc("g/"+V.code),P=()=>db.collection("g/"+V.code+"/p");
 const me=()=>V.ps.find(p=>p.id==V.pid);
 const mapH=()=>`<div class="map">${GR.map(([l,e])=>`<div><b>${e}</b><span>${l.replace("-"," ")}</span></div>`).join("")}</div>`;
 const bt=p=>p.bell&&p.bell.toMillis?p.bell.toMillis():+p.bell||0;
-const queue=()=>{const s=V.st;if(!s||s.phase!="q")return[];const tr=s.tried||[];return V.ps.filter(p=>p.bellRound==s.round&&bt(p)&&!tr.includes(p.id)).sort((a,b)=>bt(a)-bt(b)||(a.id<b.id?-1:1))};
+const queue=()=>{const s=V.st;if(!s||s.phase!="q")return[];return V.ps.filter(p=>p.bellRound==s.round&&bt(p)).sort((a,b)=>bt(a)-bt(b)||(a.id<b.id?-1:1))};
 const turnId=()=>{const q=queue();return q.length?q[0].id:""};
 const queueH=()=>{const q=queue();return q.length?`<div class="queue"><h4>ترتيب قرع الجرس</h4>${q.map((p,i)=>`<div class="sc${i?"":" m1"}"><span class="rk">${i+1}</span><span class="nm">${esc(p.name)}</span><small dir="ltr">${i?"+"+((bt(p)-bt(q[0]))/1000).toFixed(2)+" ث":"الدور الآن"}</small></div>`).join("")}</div>`:""};
 const nextH=()=>{const q=queue();return q.length>1?`<div class="ev" style="margin:0;justify-content:flex-start"><span class="chip">التالي في الدور</span>${q.slice(1,7).map((p,i)=>`<span class="chip"><b>${i+2}</b> ${esc(p.name)}</span>`).join("")}</div>`:""};
 let lastT="",noAt=0;
-function turnHook(){const t=turnId();if(t==lastT)return;lastT=t;if(!t)return;setTimeout(()=>snd("bell"),Date.now()-noAt<700?450:0);if(V.role=="p"&&t==V.pid){sc0=(me()||{}).score||0;foc=1}}
+const TURN=10;let tSt=0,tcl="";
+const trem=()=>Math.max(0,Math.ceil((tSt+TURN*1000-Date.now())/1000));
+function turnHook(){const t=turnId();if(t==lastT)return;const prev=lastT;lastT=t;if(!t)return;tSt=Date.now();setTimeout(()=>snd("bell"),prev||Date.now()-noAt<700?450:0);if(V.role=="p"&&t==V.pid){sc0=(me()||{}).score||0;foc=1}}
 const rkOf=id=>{const m=V.ps.find(p=>p.id==id);return m?1+V.ps.filter(p=>(p.score||0)>(m.score||0)).length:0};
 const board=()=>{const a=[...V.ps].sort((x,y)=>(y.score||0)-(x.score||0)),mx=Math.max(1,...a.map(p=>p.score||0));
 return a.length?`<div class="board">${a.map(p=>{const sc=p.score||0,r=rkOf(p.id);return `<div class="sc${sc>0&&r<=3?" m"+r:""}${p.id==V.pid?" me":""}" style="--w:${Math.round(Math.max(0,sc)/mx*100)}%"><span class="rk">${r}</span><span class="nm">${esc(p.name)}${p.id==V.pid?" <em>أنت</em>":""}</span><b>${sc}</b></div>`}).join("")}</div>`:`<div class="empty">${I("users")}<span>لا يوجد متسابقون بعد</span></div>`};
@@ -353,7 +356,7 @@ const qH=s=>s.emoji?s.emoji.split("|").map(w=>`<span class="w">${w}</span>`).joi
 const rem=s=>Math.max(0,Math.ceil(((t0r==s.round?t0:s.startedAt)+s.dur*1000-Date.now())/1000));
 const stt=(k,i,t,a)=>`<div class="st st-${k}"><span class="st-i">${I(i)}</span><div><div class="st-t">${t}</div>${a?`<div class="st-a"><span>الإجابة</span>${a}</div>`:""}</div></div>`;
 const DOTS='<span class="dots"><i></i><i></i><i></i></span>';
-const banner=(s,w)=>s.phase=="reveal"?(s.res?.ok?stt("ok","check",`${esc(s.res.n)} أجاب إجابة صحيحة <span class="pts" dir="ltr">+10</span>`,esc(s.ans)):s.res?.to?stt("err","clock","انتهى الوقت",esc(s.ans)):stt("info","eye","كُشفت الإجابة",esc(s.ans))):s.phase=="q"?(queue().length?stt("turn","bell",`الجرس عند ${esc(queue()[0].name)}`):stt("wait","belloff","بانتظار قرع الجرس"+DOTS)):stt("wait","clock",(w||"بانتظار بدء السؤال")+DOTS);
+const banner=(s,w)=>s.phase=="reveal"?(s.res?.ok?stt("ok","check",`${esc(s.res.n)} أجاب إجابة صحيحة <span class="pts" dir="ltr">+10</span>`,esc(s.ans)):s.res?.to?stt("err","clock","انتهى الوقت",esc(s.ans)):stt("info","eye","كُشفت الإجابة",esc(s.ans))):s.phase=="q"?(queue().length?stt("turn","bell",`الجرس عند ${esc(queue()[0].name)} <span class="pts tt" id="tt" dir="ltr">${trem()}</span>`):stt("wait","belloff","بانتظار قرع الجرس"+DOTS)):stt("wait","clock",(w||"بانتظار بدء السؤال")+DOTS);
 const timer=s=>`<span class="timer${s.phase!="q"?" off":rem(s)<=10?" urgent":""}">${I("clock")}<b id="tm">${s.phase=="q"?rem(s):"—"}</b></span>`;
 const topbar=(s,rl,ex)=>`<header class="top"><span class="brand">${I("lock")}<span>الشفرة السرية</span></span><span class="chip code">الرمز <b>${V.code}</b></span><span class="chip">${rl}</span>${ex||""}<span class="grow"></span>${MU()}${timer(s)}</header><div class="tbar"><i id="tb" style="width:${s.phase=="q"?Math.min(100,rem(s)/s.dur*100):0}%"></i></div>`;
 const rank=()=>[...V.ps].sort((a,b)=>(b.score||0)-(a.score||0));
@@ -405,14 +408,15 @@ await up({phase:"q",round:s.round+1,qn:(s.qn||0)+1,level:lv,dur,emoji:enc(t),sta
 const reveal=res=>up({phase:"reveal",ans:cur||"—",res});
 async function mark(ok){const s=V.st,p=V.ps.find(x=>x.id==turnId());if(!p)return;
 if(ok){await P().doc(p.id).update({score:(p.score||0)+10});reveal({n:p.name,ok:1})}else wrong(p,5)}
-async function wrong(p,n){await P().doc(p.id).update({score:(p.score||0)-n});await up({turn:"",turnName:"",tried:[...(V.st.tried||[]),p.id]})}
+async function wrong(p,n){await P().doc(p.id).update({score:(p.score||0)-n,bellRound:0});await up({tried:[...(V.st.tried||[]),p.id].slice(-200)})}
+async function expire(p){await P().doc(p.id).update({bellRound:0});await up({tried:[...(V.st.tried||[]),p.id+":t"].slice(-200)})}
 let cf=0;
 function endG(){if(!cf){cf=1;render();setTimeout(()=>{if(cf){cf=0;render()}},4000);return}cf=0;up({phase:"end",turn:"",turnName:""})}
 const reopen=()=>up({phase:"lobby",turn:"",turnName:"",emoji:"",res:null,ans:""});
 async function resetAll(){for(const p of V.ps)await P().doc(p.id).update({score:0});up({used:[]});toast("تم تصفير النقاط")}
 async function addQ(){const t=cl($("cq").value);if(!t)return;await up({extra:[...(V.st.extra||[]),{t,l:V.st.level=="fin"||V.st.level=="mix"?"mid":V.st.level}].slice(-300)});$("cq").value="";keep.cq="";toast("أضيف السؤال وسيظهر ضمن الأسئلة القادمة")}
 const TS=()=>window.firebase&&firebase.firestore&&firebase.firestore.FieldValue?firebase.firestore.FieldValue.serverTimestamp():Date.now();
-async function bell(){const s=V.st,m=me();if(!s||s.phase!="q"||!m||m.bellRound==s.round||(s.tried||[]).includes(V.pid))return;snd("click");await P().doc(V.pid).update({bell:TS(),bellRound:s.round})}
+async function bell(){const s=V.st,m=me();if(!s||s.phase!="q"||!m||m.bellRound==s.round)return;snd("click");await P().doc(V.pid).update({bell:TS(),bellRound:s.round})}
 async function send(){const v=$("an").value.trim();if(!v)return;keep.an="";$("an").value="";await P().doc(V.pid).update({ans:v,ansRound:V.st.round,aid:Math.random().toString(36).slice(2)})}
 function logic(){if(V.role!="h"||!V.st)return;const s=V.st;if(s.phase!="q")return;
 const t=turnId();if(!t)return;
@@ -443,9 +447,9 @@ ${s.phase!="lobby"?`<section class="card case"><div class="case-h"><span>${I("se
 <section class="card"><h3>${I("plus")} إضافة أسئلة</h3><div class="row"><input id="cq" class="grow" style="flex:1 1 220px;width:auto" placeholder="كلمة أو عبارة تتحول لرموز تلقائياً"><button onclick="addQ()">${I("plus")} إضافة</button></div>
 <p class="mu" style="margin-top:12px;font-size:14px">عدد الأسئلة المتاحة في المستوى المختار: ${pool(s.level,s.extra).length} · لا يتكرر السؤال ما دامت هناك أسئلة غير مستخدمة.</p></section></div>
 <aside class="card"><h3>${I("users")} المتسابقون (${V.ps.length})</h3>${board()}<button class="s wide" onclick="resetAll()" style="margin-top:16px">${I("reset")} تصفير النقاط</button><button class="${cf?"r":"s"} wide" onclick="endG()" style="margin-top:8px">${I(cf?"alert":"x")} ${cf?"اضغط مرة أخرى للتأكيد":"إنهاء المسابقة"}</button></aside></div>`;
-else{const m=me()||{},mine=T==V.pid,rung=m.bellRound==s.round,pos=queue().findIndex(p=>p.id==V.pid)+1,TN=T?queue()[0].name:"",tried=(s.tried||[]).includes(V.pid),q=s.phase=="q",ws=s.emoji?s.emoji.split("|"):[],ns=ws.reduce((n,w)=>n+w.split(" ").length,0),won=wonR==s.round;
+else{const m=me()||{},mine=T==V.pid,rung=m.bellRound==s.round,pos=queue().findIndex(p=>p.id==V.pid)+1,TN=T?queue()[0].name:"",lastOwn=(s.tried||[]).filter(x=>x.split(":")[0]==V.pid).pop()||"",q=s.phase=="q",ws=s.emoji?s.emoji.split("|"):[],ns=ws.reduce((n,w)=>n+w.split(" ").length,0),won=wonR==s.round;
 const LOCK=t=>`<div class="ansbox lock">${I("lock")}<span>${t}</span></div>`;
-const ANS=`<section class="card case dock"><label class="ans-l" for="an">${I("key")} أدخل الشفرة المفكوكة</label><div class="ans-row"><input id="an" dir="rtl" lang="ar" inputmode="text" enterkeyhint="send" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" maxlength="60" placeholder="اكتب إجابتك هنا" onkeydown="if(event.key=='Enter')send()"><button onclick="send()">${I("send")} إرسال</button></div><p class="ans-n">الدور لك الآن. اكتب الإجابة بالحروف العربية ثم أرسل.</p></section>`;
+const ANS=`<section class="card case dock"><label class="ans-l" for="an">${I("key")} أدخل الشفرة المفكوكة</label><div class="ans-row"><input id="an" dir="rtl" lang="ar" inputmode="text" enterkeyhint="send" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" maxlength="60" placeholder="اكتب إجابتك هنا" onkeydown="if(event.key=='Enter')send()"><button onclick="send()">${I("send")} إرسال</button></div><div class="tbar tt"><i id="ttb" style="width:${Math.min(100,(tSt+TURN*1000-Date.now())/(TURN*10))}%"></i></div><p class="ans-n">الدور لك: أمامك <b id="tt" dir="ltr">${trem()}</b> ثوانٍ لإرسال الإجابة.</p></section>`;
 const ANSW=`<div class="st-a"><span>الإجابة</span>${esc(s.ans)}</div>`;
 const RES=s.res?.ok?`<div class="res ok"><div class="emblem">${I("check")}</div><h2>${won?"أحسنت أيها المحقق":"حُلّت القضية"}</h2><p>${won?'كسبت <b dir="ltr">+10</b> نقاط':esc(s.res.n)+" أجاب إجابة صحيحة"}</p>${ANSW}</div>`:
 s.res?.to?`<div class="res to"><div class="emblem">${I("clock")}</div><span class="stamp">انتهى الوقت</span><h2>انتهى التحدي</h2><p>لم تُفك شفرة هذه القضية في الوقت المحدد.</p>${ANSW}<p style="margin:12px 0 0">استعد للقضية التالية${DOTS}</p></div>`:
@@ -455,7 +459,7 @@ h=`<div class="sticky">${hud(s,m,q&&mine)}${q&&mine?ANS:""}</div>
 ${s.phase=="lobby"?`<div class="res"><div class="emblem pulse">${I("clock")}</div><h2>بانتظار فتح الملف</h2><p>سيبدأ المنظّم القضية الأولى بعد قليل. انظر إلى شاشة العرض${DOTS}</p></div>`:s.phase=="reveal"?RES:
 `<h2 class="case-t">القضية رقم ${s.qn||1}</h2><p class="case-d">شفرة غامضة ظهرت على شاشة العرض. فُكّ رموزها بالأدلة التي أمامك، ثم اقرع الجرس قبل غيرك لتدلي بإجابتك.</p>
 <div class="ev"><span class="chip">الكلمات <b>${ws.length}</b></span><span class="chip">الرموز <b>${ns}</b></span><span class="chip">المهلة <b>${s.dur} ثانية</b></span></div>
-${mine?stt("turn","key","الدور لك، أدخل الشفرة في الأعلى"):tried?`<div class="note" style="margin:0">${I("x")}<span>أجبت خطأً في هذه القضية، الدور لغيرك الآن</span></div>`+LOCK("استنفدت محاولتك في هذه القضية"):pos?stt("turn","bell",`أنت رقم ${pos} في الدور`)+LOCK(`الدور الآن عند ${esc(TN)}، ويُفتح الحقل عند وصول دورك`):(T?stt("turn","bell",`الجرس عند ${esc(TN)}`):"")+`<button class="bell r" ${rung?"disabled":""} onclick="bell()">${rung?'<span class="spin" style="width:56px;height:56px;border-width:4px"></span>':I("bell")}<span>${rung?"جارٍ تسجيل قرعتك…":"قرع الجرس"}</span></button>`+LOCK(T?"اقرع الجرس لتدخل الدور بعده":"اقرع الجرس لفتح حقل الإجابة")}`}</section>
+${mine?stt("turn","key","الدور لك، أدخل الشفرة في الأعلى"):pos?stt("turn","bell",`أنت رقم ${pos} في الدور`)+LOCK(`الدور الآن عند ${esc(TN)}، ويُفتح الحقل عند وصول دورك`):(lastOwn&&!rung?`<div class="note" style="margin:0 0 12px">${I(lastOwn.endsWith(":t")?"clock":"x")}<span>${lastOwn.endsWith(":t")?"انتهت مهلة إجابتك":"إجابتك خاطئة"}، يمكنك قرع الجرس من جديد</span></div>`:"")+(T?stt("turn","bell",`الجرس عند ${esc(TN)} <span class="pts tt" id="tt" dir="ltr">${trem()}</span>`):"")+`<button class="bell r" ${rung?"disabled":""} onclick="bell()">${rung?'<span class="spin" style="width:56px;height:56px;border-width:4px"></span>':I("bell")}<span>${rung?"جارٍ تسجيل قرعتك…":lastOwn?"اقرع من جديد":"قرع الجرس"}</span></button>`+LOCK(T?"اقرع الجرس لتدخل الدور بعده":"اقرع الجرس لفتح حقل الإجابة")}`}</section>
 <section class="card"><h3>${I("grid")} الأدلة: خريطة الشفرة</h3>${mapH()}</section></div>`}
 if(document.body){document.body.classList.toggle("room",V.role=="p"&&!!s&&s.phase!="end");document.body.classList.toggle("modal",!V.role&&!!pn)}
 a.innerHTML=h;Object.entries(keep).forEach(([k,v])=>{const e=$(k);if(e)e.value=v});if(f&&$(f)){$(f).focus()}if(foc){foc=0;const e=$("an");if(e)e.focus()}
@@ -463,7 +467,9 @@ const k=V.role+"|"+(s?s.phase+s.round:""),k2=s?[T,(s.tried||[]).length,queue().l
 if(V.role!=vr){vr=V.role;if(window.scrollTo)scrollTo(0,0)}
 if(a.classList){if(k!=vk){vk=k;vk2=k2;a.classList.remove("in","sw");void a.offsetWidth;a.classList.add("in");clearTimeout(vt);vt=setTimeout(()=>a.classList.remove("in"),2200)}
 else if(k2!=vk2){vk2=k2;a.classList.remove("sw");void a.offsetWidth;a.classList.add("sw");clearTimeout(st2);st2=setTimeout(()=>a.classList.remove("sw"),400)}}}
-setInterval(()=>{const s=V.st,t=$("tm");if(!s||s.phase!="q")return;const r=rem(s);if(t){t.textContent=r;t.parentElement.classList.toggle("urgent",r<=10);const b=$("tb");if(b)b.style.width=Math.min(100,r/s.dur*100)+"%"}if(r!=lastR){lastR=r;if(r>0&&r<=10)snd(r<=3?"tick2":"tick")}if(V.role=="h"&&rem(s)<=0&&cur)reveal({to:1})},500);
+setInterval(()=>{const s=V.st,t=$("tm");if(!s||s.phase!="q")return;const r=rem(s);if(t){t.textContent=r;t.parentElement.classList.toggle("urgent",r<=10);const b=$("tb");if(b)b.style.width=Math.min(100,r/s.dur*100)+"%"}if(r!=lastR){lastR=r;if(r>0&&r<=10)snd(r<=3?"tick2":"tick")}const T=turnId(),e=$("tt");if(T&&e){const x=trem();e.textContent=x;const b=$("ttb");if(b)b.style.width=Math.min(100,(tSt+TURN*1000-Date.now())/(TURN*10))+"%"}
+if(V.role=="h"&&rem(s)<=0&&cur)return reveal({to:1});
+if(V.role=="h"&&T&&Date.now()-tSt>=TURN*1000&&tcl!=T+tSt){const p=V.ps.find(x=>x.id==T);if(p&&!(p.ansRound==s.round&&p.aid&&p.aid!=judged)){tcl=T+tSt;expire(p)}}},250);
 function boot(){try{firebase.initializeApp({apiKey:"AIzaSyCvWPsDejIi-4l4rL1HdaI8QfTHtXkXuL0",authDomain:"thecodegame-490ff.firebaseapp.com",projectId:"thecodegame-490ff",storageBucket:"thecodegame-490ff.firebasestorage.app",messagingSenderId:"218759727905",appId:"1:218759727905:web:de0e4943e3c61e57d88c60"});db=firebase.firestore();conn=1}catch(e){conn=2}
 if(conn==2||V.role||pn)render();else lsUp();watch(new URLSearchParams(location.search).get("c")||"")}
 window.addEventListener("unhandledrejection",e=>{toast(e.reason&&e.reason.code=="permission-denied"?"قواعد قاعدة البيانات لا تسمح بعد — انظر firestore.rules":"تعذر الاتصال، حاول مجدداً")});
