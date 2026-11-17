@@ -120,6 +120,7 @@ label.f{display:grid;gap:6px;font-size:14px;color:var(--muted);margin-bottom:var
 .sc{position:relative;isolation:isolate}.sc::before{content:"";position:absolute;inset:0 0 0 auto;width:var(--w,0%);z-index:-1;border-radius:inherit;background:linear-gradient(270deg,rgba(var(--acc-rgb),.11),rgba(var(--acc-rgb),0));transition:width .5s ease}
 .sc.me{border-color:var(--line-acc)}.sc em{font-style:normal;font-size:13px;color:var(--acc-hi);margin-inline-start:6px;padding:0 8px;border-radius:var(--r-pill);border:1px solid var(--line-acc)}
 .sc b{min-width:3ch;text-align:left}
+.xit{padding:0 14px;gap:6px;flex:none}.xit.on{color:#fff;background:linear-gradient(180deg,var(--red-hi),var(--red));border-color:transparent}
 .sc .rm{flex:none;width:44px;min-height:44px;padding:0;border-radius:50%;color:var(--muted)}.sc .rm:hover{color:var(--red-tx);border-color:var(--red-hi)}.sc .rm.on{width:auto;padding:0 14px;border-radius:var(--r-sm);color:#fff;background:linear-gradient(180deg,var(--red-hi),var(--red));border-color:transparent;font-size:14px;white-space:nowrap}
 .pts.tt{background:var(--acc-a);border-color:var(--line-acc);color:var(--acc-hi);min-width:2.2em;text-align:center}.tbar.tt{margin:var(--s3) 0 0}.tbar.tt i{transition:width .25s linear}
 .queue{margin-top:var(--s4)}.queue h4{margin:0 0 var(--s2);font-size:14px;font-weight:500;color:var(--muted)}.queue small{color:var(--muted);font-size:13px;font-variant-numeric:tabular-nums}
@@ -310,6 +311,7 @@ eye:'<path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12"
 trophy:'<path d="M6 9a6 6 0 0 0 12 0V3H6v6z"/><path d="M6 5H3v2a3 3 0 0 0 3 3M18 5h3v2a3 3 0 0 1-3 3M12 15v4M8 21h8"/>',
 key:'<circle cx="7.5" cy="15.5" r="4.5"/><path d="M10.7 12.3 21 2M17 6l3 3M14 9l2 2"/>',
 grid:'<rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/>',
+exit:'<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/>',
 reset:'<path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/>',send:'<path d="M22 2 11 13"/><path d="M22 2l-7 20-4-9-9-4 20-7z"/>',
 shield:'<path d="M12 2l8 3v6c0 5-3.5 9-8 11-4.5-2-8-6-8-11V5l8-3z"/>',alert:'<path d="M12 3 2 20h20L12 3z"/><path d="M12 10v4M12 17.5v.01"/>',
 search:'<circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/>',info:'<circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 7.5v.01"/>',sliders:'<path d="M4 6h10M18 6h2M4 12h2M10 12h10M4 18h12M20 18h0"/><circle cx="16" cy="6" r="2"/><circle cx="8" cy="12" r="2"/><circle cx="18" cy="18" r="2"/>'};
@@ -360,7 +362,7 @@ const stt=(k,i,t,a)=>`<div class="st st-${k}"><span class="st-i">${I(i)}</span><
 const DOTS='<span class="dots"><i></i><i></i><i></i></span>';
 const banner=(s,w)=>s.phase=="reveal"?(s.res?.ok?stt("ok","check",`${esc(s.res.n)} أجاب إجابة صحيحة <span class="pts" dir="ltr">+10</span>`,esc(s.ans)):s.res?.to?stt("err","clock","انتهى الوقت",esc(s.ans)):stt("info","eye","كُشفت الإجابة",esc(s.ans))):s.phase=="q"?(queue().length?stt("turn","bell",`الجرس عند ${esc(queue()[0].name)} <span class="pts tt" id="tt" dir="ltr">${trem()}</span>`):stt("wait","belloff","بانتظار قرع الجرس"+DOTS)):stt("wait","clock",(w||"بانتظار بدء السؤال")+DOTS);
 const timer=s=>`<span class="timer${s.phase!="q"?" off":rem(s)<=10?" urgent":""}">${I("clock")}<b id="tm">${s.phase=="q"?rem(s):"—"}</b></span>`;
-const topbar=(s,rl,ex)=>`<header class="top"><span class="brand">${I("lock")}<span>الشفرة السرية</span></span><span class="chip code">الرمز <b>${V.code}</b></span><span class="chip">${rl}</span>${ex||""}<span class="grow"></span>${MU()}${timer(s)}</header><div class="tbar"><i id="tb" style="width:${s.phase=="q"?Math.min(100,rem(s)/s.dur*100):0}%"></i></div>`;
+const topbar=(s,rl,ex)=>`<header class="top"><span class="brand">${I("lock")}<span>الشفرة السرية</span></span><span class="chip code">الرمز <b>${V.code}</b></span><span class="chip">${rl}</span>${ex||""}<span class="grow"></span>${MU()}${V.role!="p"?XIT():""}${timer(s)}</header><div class="tbar"><i id="tb" style="width:${s.phase=="q"?Math.min(100,rem(s)/s.dur*100):0}%"></i></div>`;
 const rank=()=>[...V.ps].sort((a,b)=>(b.score||0)-(a.score||0));
 const fin=()=>{const a=rank(),t=a.filter(p=>(p.score||0)==(a[0].score||0));return `<section class="card case"><div class="lobby"><div class="emblem">${I("trophy")}</div><span class="stamp">أُغلق الملف</span><h2>انتهت المسابقة</h2>${a.length?`<p class="join">${t.length>1?"تعادل في الصدارة":"الفائز"}</p><b class="win">${t.map(p=>esc(p.name)).join(" · ")}</b><p class="mu">${a[0].score||0} نقطة</p>`:`<p class="join">لم يشارك أي متسابق</p>`}</div></section>`};
 const endView=s=>{const r=rkOf(V.pid),m=me()||{};
@@ -422,7 +424,10 @@ async function delP(id){const p=V.ps.find(x=>x.id==id);if(!p)return;
 if(dl!=id){dl=id;clearTimeout(dlt);dlt=setTimeout(()=>{if(dl==id){dl="";render()}},4000);render();return}
 dl="";clearTimeout(dlt);render();
 try{await P().doc(id).delete();toast("تم حذف "+p.name)}catch(e){toast(e&&e.code=="permission-denied"?"قواعد قاعدة البيانات لا تسمح بالحذف بعد — حدّث firestore.rules":"تعذر الحذف، حاول مجدداً")}}
-function leave(){unsubs.forEach(u=>u());unsubs=[];watch("");V.role=null;V.st=null;V.ps=[];V.pl=false;V.pid=null;V.code="";pn="";render()}
+let xc=0,xct=0;
+const XIT=()=>`<button class="s xit${xc?" on":""}" onclick="xit()" aria-label="${xc?"تأكيد الخروج من اللعبة":"الخروج من اللعبة"}">${I("exit")}<span>${xc?"اضغط للتأكيد":"خروج"}</span></button>`;
+function xit(){if(!xc){xc=1;clearTimeout(xct);xct=setTimeout(()=>{xc=0;render()},4000);render();return}xc=0;clearTimeout(xct);leave()}
+function leave(){const c=V.code;unsubs.forEach(u=>u());unsubs=[];watch("");V.role=null;V.st=null;V.ps=[];V.pl=false;V.pid=null;V.code="";pn="";cf=0;dl="";xc=0;lastT="";tSt=0;keep.code=c||"";render();if(c)watch(c)}
 async function resetAll(){for(const p of V.ps)await P().doc(p.id).update({score:0});up({used:[]});toast("تم تصفير النقاط")}
 async function addQ(){const t=cl($("cq").value);if(!t)return;await up({extra:[...(V.st.extra||[]),{t,l:V.st.level=="fin"||V.st.level=="mix"?"mid":V.st.level}].slice(-300)});$("cq").value="";keep.cq="";toast("أضيف السؤال وسيظهر ضمن الأسئلة القادمة")}
 const TS=()=>window.firebase&&firebase.firestore&&firebase.firestore.FieldValue?firebase.firestore.FieldValue.serverTimestamp():Date.now();
