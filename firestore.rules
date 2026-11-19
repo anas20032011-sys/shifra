@@ -7,10 +7,11 @@ service cloud.firestore {
       // اللعبة بلا حسابات: الدخول برمز من ٤ أرقام، والكتابة محصورة في حقول اللعبة وبحجم محدود
       allow read: if true;
       allow create, update: if code.matches('^[0-9]{4}$')
-                    && request.resource.data.keys().hasOnly(['phase','round','qn','level','dur','startedAt','emoji','turn','turnName','tried','used','extra','ans','res'])
+                    && request.resource.data.keys().hasOnly(['phase','round','qn','level','dur','startedAt','emoji','turn','turnName','tried','used','extra','ans','res','turnSec'])
                     && request.resource.data.emoji is string && request.resource.data.emoji.size() < 2000
                     && request.resource.data.ans is string && request.resource.data.ans.size() < 300
-                    && request.resource.data.used.size() <= 400 && request.resource.data.extra.size() <= 300;
+                    && request.resource.data.used.size() <= 400 && request.resource.data.extra.size() <= 300
+                    && (!('turnSec' in request.resource.data) || (request.resource.data.turnSec is number && request.resource.data.turnSec >= 3 && request.resource.data.turnSec <= 60));
       match /p/{pid} {
         allow read: if true;
         allow create, update: if request.resource.data.keys().hasOnly(['name','score','bell','bellRound','ans','ansRound','aid'])
